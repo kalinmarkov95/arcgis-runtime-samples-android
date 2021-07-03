@@ -36,15 +36,15 @@ public class MainActivity extends AppCompatActivity {
 
     // authentication with an API key or named user is required to access basemaps and other
     // location services
-    ArcGISRuntimeEnvironment.setApiKey("AAPK1a7fd289804c40b6a9bfdb166940300fstTorWtcRqOl2G_F_FnRpcl-XbAU2_Q3IVtsy7euL9CwtbDxjPIvTCng8CYows8j");
+    ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
 
     // inflate MapView from layout
     mMapView = findViewById(R.id.mapView);
     // create a map with the a topographic basemap
-    ArcGISMap map = new ArcGISMap(BasemapStyle.ARCGIS_TOPOGRAPHIC);
+    ArcGISMap map = new ArcGISMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD);
     // set the map to be displayed in this view
     mMapView.setMap(map);
-    mMapView.setViewpoint(new Viewpoint(41.840424, 23.485653, 100000));
+    mMapView.setViewpoint(new Viewpoint(41.76122, 23.44046, 10000));
   }
 
   @Override
