@@ -20,6 +20,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.data.ServiceFeatureTable;
+import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.Viewpoint;
@@ -31,36 +33,53 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
-    // authentication with an API key or named user is required to access basemaps and other
-    // location services
     ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
 
-    // inflate MapView from layout
+    displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 10000);
+
+    String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_slope_with_simplified_polygons/FeatureServer/1";
+    String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishteboundary/FeatureServer/0";
+    String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
+
+    displayFeatureLayer(echmishteSlopeURL);
+    displayFeatureLayer(echmishteBoundaryURL);
+    displayFeatureLayer(pirinNationalParkBoundaryURL);
+  }
+
+  private void displayBaseMap(BasemapStyle basemapStyle, double initialLat, double initialLong, int scale) {
+
     mMapView = findViewById(R.id.mapView);
-    // create a map with the a topographic basemap
-    ArcGISMap map = new ArcGISMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD);
-    // set the map to be displayed in this view
+    ArcGISMap map = new ArcGISMap(basemapStyle);
     mMapView.setMap(map);
-    mMapView.setViewpoint(new Viewpoint(41.76122, 23.44046, 10000));
+    mMapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
+  }
+
+  private void displayFeatureLayer(String featureLayerURL) {
+
+    ServiceFeatureTable testFeatureTable = new ServiceFeatureTable(featureLayerURL);
+    mMapView.getMap().getOperationalLayers().add(new FeatureLayer(testFeatureTable));
   }
 
   @Override
   protected void onPause() {
+
     mMapView.pause();
     super.onPause();
   }
 
   @Override
   protected void onResume() {
+
     super.onResume();
     mMapView.resume();
   }
 
   @Override
   protected void onDestroy() {
+
     mMapView.dispose();
     super.onDestroy();
   }
