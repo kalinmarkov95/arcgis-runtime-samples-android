@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
         locationDisplay = mapView.getLocationDisplay();
         spinner = findViewById(R.id.spinner);
 
-        String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_slope_with_simplified_polygons/FeatureServer/1";
-        String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishteboundary/FeatureServer/0";
+        String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope/FeatureServer/0";
+        String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
         displayFeatureLayer(echmishteSlopeURL);
