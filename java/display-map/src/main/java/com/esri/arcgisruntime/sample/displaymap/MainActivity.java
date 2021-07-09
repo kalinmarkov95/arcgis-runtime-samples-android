@@ -1,86 +1,103 @@
-/* Copyright 2016 Esri
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 package com.esri.arcgisruntime.sample.displaymap;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.Viewpoint;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
 
 public class MainActivity extends AppCompatActivity {
 
-  private MapView mMapView;
+    private MapView mapView;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+    private LocationDisplay locationDisplay;
 
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
+    private Spinner spinner;
 
-    displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 10000);
+    private LocationDisplayer locationDisplayer;
 
-    String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_slope_with_simplified_polygons/FeatureServer/1";
-    String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishteboundary/FeatureServer/0";
-    String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
+    public MainActivity() {
 
-    displayFeatureLayer(echmishteSlopeURL);
-    displayFeatureLayer(echmishteBoundaryURL);
-    displayFeatureLayer(pirinNationalParkBoundaryURL);
-  }
+        this.locationDisplayer = new LocationDisplayer();
+    }
 
-  private void displayBaseMap(BasemapStyle basemapStyle, double initialLat, double initialLong, int scale) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 
-    mMapView = findViewById(R.id.mapView);
-    ArcGISMap map = new ArcGISMap(basemapStyle);
-    mMapView.setMap(map);
-    mMapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
-  }
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-  private void displayFeatureLayer(String featureLayerURL) {
+        ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
+        displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 10000);
+        locationDisplay = mapView.getLocationDisplay();
+        spinner = findViewById(R.id.spinner);
 
-    ServiceFeatureTable testFeatureTable = new ServiceFeatureTable(featureLayerURL);
-    mMapView.getMap().getOperationalLayers().add(new FeatureLayer(testFeatureTable));
-  }
+        String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_slope_with_simplified_polygons/FeatureServer/1";
+        String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishteboundary/FeatureServer/0";
+        String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
-  @Override
-  protected void onPause() {
+        displayFeatureLayer(echmishteSlopeURL);
+        displayFeatureLayer(echmishteBoundaryURL);
+        displayFeatureLayer(pirinNationalParkBoundaryURL);
 
-    mMapView.pause();
-    super.onPause();
-  }
+        locationDisplayer.displayGPSServices(locationDisplay, spinner, this);
+    }
 
-  @Override
-  protected void onResume() {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-    super.onResume();
-    mMapView.resume();
-  }
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-  @Override
-  protected void onDestroy() {
+            locationDisplay.startAsync();
+        } else {
 
-    mMapView.dispose();
-    super.onDestroy();
-  }
+            Toast.makeText(this, getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
+            spinner.setSelection(0, true);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapView.pause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.resume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mapView.dispose();
+    }
+
+    private void displayBaseMap(BasemapStyle basemapStyle, double initialLat, double initialLong, int scale) {
+
+        mapView = findViewById(R.id.mapView);
+        ArcGISMap map = new ArcGISMap(basemapStyle);
+        mapView.setMap(map);
+        mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
+    }
+
+    private void displayFeatureLayer(String featureLayerURL) {
+
+        ServiceFeatureTable testFeatureTable = new ServiceFeatureTable(featureLayerURL);
+        mapView.getMap().getOperationalLayers().add(new FeatureLayer(testFeatureTable));
+    }
 }
+
