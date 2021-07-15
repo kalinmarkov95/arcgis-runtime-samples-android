@@ -1,6 +1,8 @@
 package com.esri.arcgisruntime.sample.displaymap;
 
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -9,14 +11,22 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.layers.FeatureLayer;
+import com.esri.arcgisruntime.layers.LegendInfo;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.sample.displaymap.legend.Legend;
+import com.esri.arcgisruntime.sample.displaymap.legend.LegendItem;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
+import com.esri.arcgisruntime.symbology.Symbol;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,11 +54,13 @@ public class MainActivity extends AppCompatActivity {
         locationDisplay = mapView.getLocationDisplay();
         spinner = findViewById(R.id.spinner);
 
-        String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope/FeatureServer/0";
+        String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope1/FeatureServer/0";
         String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
-        displayFeatureLayer(echmishteSlopeURL);
+        FeatureLayer echmishteSlope = displayFeatureLayer(echmishteSlopeURL);
+        displayLegendForLayer(echmishteSlope);
+
         displayFeatureLayer(echmishteBoundaryURL);
         displayFeatureLayer(pirinNationalParkBoundaryURL);
 
@@ -94,10 +106,34 @@ public class MainActivity extends AppCompatActivity {
         mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
     }
 
-    private void displayFeatureLayer(String featureLayerURL) {
+    private FeatureLayer displayFeatureLayer(String featureLayerURL) {
 
-        ServiceFeatureTable testFeatureTable = new ServiceFeatureTable(featureLayerURL);
-        mapView.getMap().getOperationalLayers().add(new FeatureLayer(testFeatureTable));
+        ServiceFeatureTable featureTable = new ServiceFeatureTable(featureLayerURL);
+        FeatureLayer featureLayer = new FeatureLayer(featureTable);
+        mapView.getMap().getOperationalLayers().add(featureLayer);
+        return featureLayer;
+    }
+
+    private void displayLegendForLayer(FeatureLayer featureLayer) {
+
+        ListenableFuture<List<LegendInfo>> legendInfoFuture = featureLayer.fetchLegendInfosAsync();
+        List<LegendItem> legendItems = new ArrayList<>();
+
+        try {
+
+            List<LegendInfo> legendInfoList = legendInfoFuture.get();
+
+            for(LegendInfo legendInfo : legendInfoList) {
+
+                Symbol legendSymbol = legendInfo.getSymbol();
+                ListenableFuture<Bitmap> symbolSwatch = legendSymbol.createSwatchAsync(MainActivity.this, Color.BLUE);
+                legendItems.add(new LegendItem(legendInfo.getName(), symbolSwatch.get()));
+            }
+            mapView.addView((new Legend(this, "Лавинна\nОпасност", legendItems, 0, 200)));
+        } catch (Exception e) {
+
+            // TODO - handle this exception in some way
+        }
     }
 }
 
