@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
-        displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 10000);
+        displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 50000);
         locationDisplay = mapView.getLocationDisplay();
         spinner = findViewById(R.id.spinner);
 
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
         FeatureLayer echmishteSlope = displayFeatureLayer(echmishteSlopeURL);
-        displayLegendForLayer(echmishteSlope);
+        createLegendButton(echmishteSlope);
 
         displayFeatureLayer(echmishteBoundaryURL);
         displayFeatureLayer(pirinNationalParkBoundaryURL);
@@ -114,7 +115,30 @@ public class MainActivity extends AppCompatActivity {
         return featureLayer;
     }
 
-    private void displayLegendForLayer(FeatureLayer featureLayer) {
+    private void createLegendButton(FeatureLayer featureLayer) {
+
+        TextView textView = new TextView(this);
+        textView.setText("Покажи/скрий легенда");
+        textView.setTextSize(15);
+        textView.setTextColor(Color.WHITE);
+        textView.setBackgroundColor(Color.BLACK);
+
+        Legend legend = createLegendForLayer(featureLayer);
+
+        textView.setOnClickListener(view -> {
+
+            if(legend.isShown()) {
+
+                mapView.removeView(legend);
+            } else {
+
+                mapView.addView(legend);
+            }
+        });
+        mapView.addView(textView);
+    }
+
+    private Legend createLegendForLayer(FeatureLayer featureLayer) {
 
         ListenableFuture<List<LegendInfo>> legendInfoFuture = featureLayer.fetchLegendInfosAsync();
         List<LegendItem> legendItems = new ArrayList<>();
@@ -129,10 +153,12 @@ public class MainActivity extends AppCompatActivity {
                 ListenableFuture<Bitmap> symbolSwatch = legendSymbol.createSwatchAsync(MainActivity.this, Color.BLUE);
                 legendItems.add(new LegendItem(legendInfo.getName(), symbolSwatch.get()));
             }
-            mapView.addView((new Legend(this, "Лавинна\nОпасност", legendItems, 0, 200)));
+
+            return new Legend(this, "Лавинна\nОпасност", legendItems, 0, 90);
         } catch (Exception e) {
 
             // TODO - handle this exception in some way
+            return null;
         }
     }
 }

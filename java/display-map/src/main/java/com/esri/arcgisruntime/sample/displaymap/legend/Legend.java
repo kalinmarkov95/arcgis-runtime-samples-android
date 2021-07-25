@@ -36,18 +36,18 @@ public class Legend extends View {
         int yPosition = this.yPosition;
 
         Paint titleStyle = new Paint();
-        titleStyle.setColor(Color.BLUE);
+        titleStyle.setColor(Color.WHITE);
         titleStyle.setFakeBoldText(true);
         titleStyle.setTextSize(48);
 
         Paint labelStyle = new Paint();
-        labelStyle.setColor(Color.BLACK);
+        labelStyle.setColor(Color.WHITE);
         labelStyle.setFakeBoldText(true);
         labelStyle.setTextSize(24);
 
         Paint legendBoxStyle = new Paint();
         legendBoxStyle.setStyle(Paint.Style.FILL);
-        legendBoxStyle.setColor(Color.WHITE);
+        legendBoxStyle.setColor(Color.BLACK);
 
         canvas.drawRect(xPosition, yPosition - itemSize/2, xPosition + 250, yPosition + (itemSize * 8), legendBoxStyle);
 
