@@ -59,11 +59,24 @@ public class MainActivity extends AppCompatActivity {
         String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
-        FeatureLayer echmishteSlope = displayFeatureLayer(echmishteSlopeURL);
-        createLegendButton(echmishteSlope);
-
+        displayFeatureLayer(echmishteSlopeURL);
         displayFeatureLayer(echmishteBoundaryURL);
         displayFeatureLayer(pirinNationalParkBoundaryURL);
+
+        String pirin1SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope11/FeatureServer/0";
+        String pirin2SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope2/FeatureServer/0";
+        String pirin3SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope3/FeatureServer/0";
+        String pirin4SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope4/FeatureServer/0";
+        String pirin5SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/dissolved5/FeatureServer/0";
+
+
+        FeatureLayer pirin1 = displayFeatureLayer(pirin1SlopeURL);
+        createLegendButton(pirin1);
+
+        displayFeatureLayer(pirin2SlopeURL);
+        displayFeatureLayer(pirin3SlopeURL);
+        displayFeatureLayer(pirin4SlopeURL);
+        displayFeatureLayer(pirin5SlopeURL);
 
         locationDisplayer.displayGPSServices(locationDisplay, spinner, this);
     }
@@ -154,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 legendItems.add(new LegendItem(legendInfo.getName(), symbolSwatch.get()));
             }
 
-            return new Legend(this, "Лавинна\nОпасност", legendItems, 0, 90);
+            return new Legend(this, "Наклон в\nградуси", legendItems, 0, 90);
         } catch (Exception e) {
 
             // TODO - handle this exception in some way
