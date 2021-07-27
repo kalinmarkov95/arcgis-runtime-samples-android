@@ -9,6 +9,7 @@ import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.layers.LegendInfo;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.symbology.Symbol;
 
 import java.util.ArrayList;
@@ -18,32 +19,98 @@ public class LegendController {
 
     private Context context;
 
-    public LegendController(Context context) {
+    private MapView mapView;
+
+    private TextView slopeLegendButton;
+
+    private Legend slopeLegend;
+
+    private TextView avalancheRiskLegendButton;
+
+    private Legend avalancheRiskLegend;
+
+    public LegendController(Context context, MapView mapView, FeatureLayerHandler featureLayerHandler) {
 
         this.context = context;
+        this.mapView = mapView;
+        this.slopeLegend = createLegendForLayer("Наклон в\nградуси", featureLayerHandler.getSlopeLayer1());
+        this.avalancheRiskLegend = createLegendForLayer("Лавинна\nопасност", featureLayerHandler.getAvalancheLayer());
+        this.slopeLegendButton = createSlopeLegendButton();
+        this.avalancheRiskLegendButton = createAvalancheRiskLegendButton();
     }
 
-    public void createLegendButton(MapView mapView, FeatureLayer featureLayer, String buttonText) {
+    private TextView createSlopeLegendButton() {
+
+        TextView textView = createTextView("Покажи/скрий легенда");
+        textView.setOnClickListener(view -> {
+
+            if(slopeLegend.isShown()) {
+
+                mapView.removeView(slopeLegend);
+            } else {
+
+                mapView.addView(slopeLegend);
+            }
+        });
+
+        return textView;
+    }
+
+    private TextView createAvalancheRiskLegendButton() {
+
+        TextView textView = createTextView("Покажи/скрий легенда");
+        textView.setOnClickListener(view -> {
+
+            if(avalancheRiskLegend.isShown()) {
+
+                mapView.removeView(avalancheRiskLegend);
+            } else {
+
+                mapView.addView(avalancheRiskLegend);
+            }
+        });
+
+        return textView;
+    }
+
+    private TextView createTextView(String buttonText) {
 
         TextView textView = new TextView(context);
         textView.setText(buttonText);
         textView.setTextSize(15);
         textView.setTextColor(Color.WHITE);
         textView.setBackgroundColor(Color.BLACK);
+        return textView;
+    }
 
-        Legend legend = createLegendForLayer("Наклон в\nградуси", featureLayer);
+    public void displaySlopeLegendButton() {
 
-        textView.setOnClickListener(view -> {
+        mapView.addView(slopeLegendButton);
+    }
 
-            if(legend.isShown()) {
+    public void displayAvalancheRiskLegendButton() {
 
-                mapView.removeView(legend);
-            } else {
+        mapView.addView(avalancheRiskLegendButton);
+    }
 
-                mapView.addView(legend);
-            }
-        });
-        mapView.addView(textView);
+    public void removeSlopeLegendButton() {
+
+        mapView.removeView(slopeLegendButton);
+    }
+
+    public void removeAvalancheRiskLegendButton() {
+
+        mapView.removeView(avalancheRiskLegendButton);
+    }
+
+    public void removeSlopeLegend() {
+
+        mapView.removeView(slopeLegend);
+    }
+
+    public void removeAvalancheRiskLegend() {
+
+        mapView.removeView(avalancheRiskLegend);
     }
 
     private Legend createLegendForLayer(String legendTitle, FeatureLayer featureLayer) {

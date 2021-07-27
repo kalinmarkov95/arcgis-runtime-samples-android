@@ -9,14 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
-import com.esri.arcgisruntime.data.ServiceFeatureTable;
-import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.sample.displaymap.legend.LegendController;
+import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,28 +43,16 @@ public class MainActivity extends AppCompatActivity {
         locationDisplay = mapView.getLocationDisplay();
         spinner = findViewById(R.id.spinner);
 
-        String echmishteSlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope1/FeatureServer/0";
         String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
-        displayFeatureLayer(echmishteSlopeURL);
-        displayFeatureLayer(echmishteBoundaryURL);
-        displayFeatureLayer(pirinNationalParkBoundaryURL);
+        FeatureLayerHandler featureLayerHandler = new FeatureLayerHandler(this, mapView);
+        featureLayerHandler.displayFeatureLayer(
+                featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
+        featureLayerHandler.displayFeatureLayer(
+                featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL));
 
-        String pirin1SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope11/FeatureServer/0";
-        String pirin2SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope2/FeatureServer/0";
-        String pirin3SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope3/FeatureServer/0";
-        String pirin4SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope4/FeatureServer/0";
-        String pirin5SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/dissolved5/FeatureServer/0";
-
-        FeatureLayer pirin1 = displayFeatureLayer(pirin1SlopeURL);
-        displayFeatureLayer(pirin2SlopeURL);
-        displayFeatureLayer(pirin3SlopeURL);
-        displayFeatureLayer(pirin4SlopeURL);
-        displayFeatureLayer(pirin5SlopeURL);
-
-        LegendController legendController = new LegendController(this);
-        legendController.createLegendButton(mapView, pirin1, "Покажи/скрий легенда");
+        featureLayerHandler.displayChangeFeatureLayerIcon();
 
         locationDisplayer.displayGPSServices(locationDisplay, spinner, this);
     }
@@ -108,14 +94,6 @@ public class MainActivity extends AppCompatActivity {
         ArcGISMap map = new ArcGISMap(basemapStyle);
         mapView.setMap(map);
         mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
-    }
-
-    private FeatureLayer displayFeatureLayer(String featureLayerURL) {
-
-        ServiceFeatureTable featureTable = new ServiceFeatureTable(featureLayerURL);
-        FeatureLayer featureLayer = new FeatureLayer(featureTable);
-        mapView.getMap().getOperationalLayers().add(featureLayer);
-        return featureLayer;
     }
 }
 
