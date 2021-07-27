@@ -1,33 +1,23 @@
 package com.esri.arcgisruntime.sample.displaymap;
 
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
-import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.layers.FeatureLayer;
-import com.esri.arcgisruntime.layers.LegendInfo;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.sample.displaymap.legend.Legend;
-import com.esri.arcgisruntime.sample.displaymap.legend.LegendItem;
+import com.esri.arcgisruntime.sample.displaymap.legend.LegendController;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
-import com.esri.arcgisruntime.symbology.Symbol;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
-        displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 50000);
+        displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 1000000);
         locationDisplay = mapView.getLocationDisplay();
         spinner = findViewById(R.id.spinner);
 
@@ -69,14 +59,14 @@ public class MainActivity extends AppCompatActivity {
         String pirin4SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope4/FeatureServer/0";
         String pirin5SlopeURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/dissolved5/FeatureServer/0";
 
-
         FeatureLayer pirin1 = displayFeatureLayer(pirin1SlopeURL);
-        createLegendButton(pirin1);
-
         displayFeatureLayer(pirin2SlopeURL);
         displayFeatureLayer(pirin3SlopeURL);
         displayFeatureLayer(pirin4SlopeURL);
         displayFeatureLayer(pirin5SlopeURL);
+
+        LegendController legendController = new LegendController(this);
+        legendController.createLegendButton(mapView, pirin1, "Покажи/скрий легенда");
 
         locationDisplayer.displayGPSServices(locationDisplay, spinner, this);
     }
@@ -126,53 +116,6 @@ public class MainActivity extends AppCompatActivity {
         FeatureLayer featureLayer = new FeatureLayer(featureTable);
         mapView.getMap().getOperationalLayers().add(featureLayer);
         return featureLayer;
-    }
-
-    private void createLegendButton(FeatureLayer featureLayer) {
-
-        TextView textView = new TextView(this);
-        textView.setText("Покажи/скрий легенда");
-        textView.setTextSize(15);
-        textView.setTextColor(Color.WHITE);
-        textView.setBackgroundColor(Color.BLACK);
-
-        Legend legend = createLegendForLayer(featureLayer);
-
-        textView.setOnClickListener(view -> {
-
-            if(legend.isShown()) {
-
-                mapView.removeView(legend);
-            } else {
-
-                mapView.addView(legend);
-            }
-        });
-        mapView.addView(textView);
-    }
-
-    private Legend createLegendForLayer(FeatureLayer featureLayer) {
-
-        ListenableFuture<List<LegendInfo>> legendInfoFuture = featureLayer.fetchLegendInfosAsync();
-        List<LegendItem> legendItems = new ArrayList<>();
-
-        try {
-
-            List<LegendInfo> legendInfoList = legendInfoFuture.get();
-
-            for(LegendInfo legendInfo : legendInfoList) {
-
-                Symbol legendSymbol = legendInfo.getSymbol();
-                ListenableFuture<Bitmap> symbolSwatch = legendSymbol.createSwatchAsync(MainActivity.this, Color.BLUE);
-                legendItems.add(new LegendItem(legendInfo.getName(), symbolSwatch.get()));
-            }
-
-            return new Legend(this, "Наклон в\nградуси", legendItems, 0, 90);
-        } catch (Exception e) {
-
-            // TODO - handle this exception in some way
-            return null;
-        }
     }
 }
 
