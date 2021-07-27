@@ -2,6 +2,7 @@ package com.esri.arcgisruntime.sample.displaymap.FeatureLayer;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
@@ -73,7 +74,13 @@ public class FeatureLayerHandler {
         changeFeatureLayerIcon.setBackgroundColor(Color.WHITE);
 
         changeFeatureLayerIcon.setX(0);
-        changeFeatureLayerIcon.setY(1310);
+        changeFeatureLayerIcon.setY(1250);
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        changeFeatureLayerIcon.setLayoutParams(params);
+
+        changeFeatureLayerIcon.getLayoutParams().height = 125;
+        changeFeatureLayerIcon.getLayoutParams().width = 125;
 
         displaySlope();
         legendController.displaySlopeLegendButton();

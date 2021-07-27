@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Дали Лави</string>
+    <string name="app_name"><i><b><font size="30">Дали Лави</font></b></i></string>
     <string name="location_permission_denied">LocationDisplayManager cannot run because location permission was denied</string>
 </resources>
