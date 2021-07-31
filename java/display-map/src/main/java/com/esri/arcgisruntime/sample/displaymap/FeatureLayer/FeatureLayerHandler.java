@@ -33,6 +33,8 @@ public class FeatureLayerHandler {
 
     private LegendController legendController;
 
+    private float opacity;
+
     public FeatureLayerHandler(Context context, MapView mapView) {
 
         this.context = context;
@@ -57,6 +59,11 @@ public class FeatureLayerHandler {
         this.legendController = new LegendController(context, mapView,this);
     }
 
+    public FeatureLayerDisplayStatus getFeatureLayerDisplayStatus() {
+
+        return featureLayerDisplayStatus;
+    }
+
     public FeatureLayer getAvalancheLayer() {
 
         return avalancheLayer;
@@ -67,13 +74,38 @@ public class FeatureLayerHandler {
         return slopeLayer1;
     }
 
+    public FeatureLayer getSlopeLayer2() {
+
+        return slopeLayer2;
+    }
+
+    public FeatureLayer getSlopeLayer3() {
+
+        return slopeLayer3;
+    }
+
+    public FeatureLayer getSlopeLayer4() {
+
+        return slopeLayer4;
+    }
+
+    public FeatureLayer getSlopeLayer5() {
+
+        return slopeLayer5;
+    }
+
+    public void setOpacity(float opacity) {
+
+        this.opacity = opacity;
+    }
+
     public void displayChangeFeatureLayerIcon() {
 
         ImageView changeFeatureLayerIcon = new ImageView(context);
         changeFeatureLayerIcon.setImageResource(R.drawable.change_feature_layer);
         changeFeatureLayerIcon.setBackgroundColor(Color.WHITE);
 
-        changeFeatureLayerIcon.setX(0);
+        changeFeatureLayerIcon.setX(10);
         changeFeatureLayerIcon.setY(1250);
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -139,8 +171,14 @@ public class FeatureLayerHandler {
         removeFeatureLayer(slopeLayer5);
     }
 
+    public void displayBoundaryLayer(FeatureLayer boundaryLayer) {
+
+        mapView.getMap().getOperationalLayers().add(boundaryLayer);
+    }
+
     public void displayFeatureLayer(FeatureLayer featureLayer) {
 
+        featureLayer.setOpacity(opacity);
         mapView.getMap().getOperationalLayers().add(featureLayer);
     }
 

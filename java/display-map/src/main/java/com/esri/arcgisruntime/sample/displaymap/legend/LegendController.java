@@ -80,17 +80,20 @@ public class LegendController {
         textView.setTextSize(15);
         textView.setTextColor(Color.WHITE);
         textView.setBackgroundColor(Color.BLACK);
+        textView.setX(10);
         return textView;
     }
 
     public void displaySlopeLegendButton() {
 
         mapView.addView(slopeLegendButton);
+        slopeLegendButton.performClick();
     }
 
     public void displayAvalancheRiskLegendButton() {
 
         mapView.addView(avalancheRiskLegendButton);
+        avalancheRiskLegendButton.performClick();
     }
 
     public void removeSlopeLegendButton() {
@@ -129,7 +132,7 @@ public class LegendController {
                 legendItems.add(new LegendItem(legendInfo.getName(), symbolSwatch.get()));
             }
 
-            return new Legend(context, legendTitle, legendItems, 0, 90);
+            return new Legend(context, legendTitle, legendItems, 10, 90);
         } catch (Exception e) {
 
             // TODO - handle this exception in some way

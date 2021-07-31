@@ -15,6 +15,7 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
+import com.esri.arcgisruntime.sample.displaymap.TransparencySlider.Slider;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,10 +48,13 @@ public class MainActivity extends AppCompatActivity {
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
         FeatureLayerHandler featureLayerHandler = new FeatureLayerHandler(this, mapView);
-        featureLayerHandler.displayFeatureLayer(
+        featureLayerHandler.displayBoundaryLayer(
                 featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
-        featureLayerHandler.displayFeatureLayer(
+        featureLayerHandler.displayBoundaryLayer(
                 featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL));
+
+        Slider transparencySlider = new Slider(this, mapView, featureLayerHandler);
+        transparencySlider.createSlider();
 
         featureLayerHandler.displayChangeFeatureLayerIcon();
 
