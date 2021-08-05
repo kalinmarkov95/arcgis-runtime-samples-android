@@ -2,23 +2,11 @@ package com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem
 
 public enum AvalancheWarningLevel {
 
-    LOW("Ниска"),
-    MODERATE("Средна"),
-    SIGNIFICANT("Значителна"),
-    HIGH("Висока"),
-    EXTREME("Много висока");
-
-    private String avalacheDangerText;
-
-    AvalancheWarningLevel(String avalacheDangerText) {
-
-        this.avalacheDangerText = avalacheDangerText;
-    }
-
-    public String getAvalacheDangerText() {
-
-        return avalacheDangerText;
-    }
+    LOW,
+    MODERATE,
+    SIGNIFICANT,
+    HIGH,
+    EXTREME;
 
     public static AvalancheWarningLevel getRespectiveWarningLevel(String warningLevel) {
 

@@ -2,7 +2,6 @@ package com.esri.arcgisruntime.sample.displaymap.TransparencySlider;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;

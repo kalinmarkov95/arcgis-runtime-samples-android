@@ -1,17 +1,8 @@
 package com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Point;
-import android.location.Location;
-import android.location.LocationListener;
-import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.view.View;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.Feature;
@@ -29,16 +20,10 @@ public class LocationChangeListener {
 
     private LocationDisplay locationDisplay;
 
-    private Context context;
-
-    private AvalancheWarningLevel currentAvalancheDanger;
-
     public LocationChangeListener(MapView mapView, LocationDisplay locationDisplay, Context context) {
 
         this.mapView = mapView;
         this.locationDisplay = locationDisplay;
-        this.context = context;
-        this.currentAvalancheDanger = AvalancheWarningLevel.LOW;
     }
 
     public void alertIfLocationInAvalancheTerrain(FeatureLayer avalancheLayer, TextView avalancheDangerLabel) {
@@ -135,16 +120,4 @@ public class LocationChangeListener {
                 break;
         }
     }
-
-    /*private void triggerVibrate(int timeToVibrate) {
-
-        Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            v.vibrate(VibrationEffect.createOneShot(timeToVibrate, VibrationEffect.DEFAULT_AMPLITUDE));
-        } else {
-
-            v.vibrate(timeToVibrate);
-        }
-    }*/
 }

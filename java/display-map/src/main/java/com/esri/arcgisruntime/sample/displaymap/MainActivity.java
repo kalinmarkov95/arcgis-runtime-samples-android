@@ -4,18 +4,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
@@ -35,41 +30,13 @@ public class MainActivity extends AppCompatActivity {
 
     private LocationDisplay locationDisplay;
 
-    private Spinner spinner;
-
-    private TextView avalancheDangerLabel;
-
-    private LocationDisplayer locationDisplayer;
-
     private FeatureLayerHandler featureLayerHandler;
 
-    public MainActivity() {
-
-        this.locationDisplayer = new LocationDisplayer();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        avalancheDangerLabel = new TextView(this);
-        avalancheDangerLabel.setText("Изключен GPS");
-        avalancheDangerLabel.setTextColor(Color.WHITE);
-        avalancheDangerLabel.setPadding(5, 0, 100, 0);
-        avalancheDangerLabel.setTypeface(null, Typeface.BOLD);
-        avalancheDangerLabel.setTextSize(14);
-        avalancheDangerLabel.setId(0);
-        menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, this);
-        locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer(), avalancheDangerLabel);
-
-        return true;
-    }
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        System.out.println("Main map");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -86,24 +53,30 @@ public class MainActivity extends AppCompatActivity {
                 featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
         featureLayerHandler.displayBoundaryLayer(
                 featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL));
+        featureLayerHandler.displayChangeFeatureLayerIcon();
 
         Slider transparencySlider = new Slider(this, mapView, featureLayerHandler);
         transparencySlider.createSlider();
 
-        featureLayerHandler.displayChangeFeatureLayerIcon();
+        new LocationDisplayer().displayGPSServices(locationDisplay, spinner, this, mapView);
+    }
 
-        locationDisplayer.displayGPSServices(locationDisplay, spinner, this, mapView);
-        //LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, this);
-        //locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer(), avalancheDangerLabel);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
-        /*LayoutInflater inflator = LayoutInflater.from(this);
-        View v = inflator.inflate(R.layout.warning_text_layout, null);
-        ((LinearLayout) v).setGravity(Gravity.RIGHT);
+        TextView avalancheDangerLabel = new TextView(this);
+        avalancheDangerLabel.setText("Изключен GPS");
+        avalancheDangerLabel.setTextColor(Color.WHITE);
+        avalancheDangerLabel.setPadding(5, 0, 100, 0);
+        avalancheDangerLabel.setTypeface(null, Typeface.BOLD);
+        avalancheDangerLabel.setTextSize(14);
+        avalancheDangerLabel.setId(0);
+        menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        ActionBar mActionBar = getSupportActionBar();
-        mActionBar.setDisplayShowHomeEnabled(false);
-        mActionBar.setDisplayShowTitleEnabled(false);
-        LayoutInflater mInflater = LayoutInflater.from(this);*/
+        LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, this);
+        locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer(), avalancheDangerLabel);
+
+        return true;
     }
 
     @Override
