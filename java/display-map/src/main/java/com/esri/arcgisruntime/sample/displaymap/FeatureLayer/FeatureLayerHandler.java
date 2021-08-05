@@ -2,20 +2,27 @@ package com.esri.arcgisruntime.sample.displaymap.FeatureLayer;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.layers.FeatureLayer;
+import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
+import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.R;
 import com.esri.arcgisruntime.sample.displaymap.legend.LegendController;
+import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
 
 public class FeatureLayerHandler {
 
     private Context context;
 
     private MapView mapView;
+
+    private LocationDisplay locationDisplay;
 
     private FeatureLayerDisplayStatus featureLayerDisplayStatus;
 
@@ -35,10 +42,11 @@ public class FeatureLayerHandler {
 
     private float opacity;
 
-    public FeatureLayerHandler(Context context, MapView mapView) {
+    public FeatureLayerHandler(Context context, MapView mapView, LocationDisplay locationDisplay) {
 
         this.context = context;
         this.mapView = mapView;
+        this.locationDisplay = locationDisplay;
         this.featureLayerDisplayStatus = new FeatureLayerDisplayStatus(
                 com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.SLOPE);
 

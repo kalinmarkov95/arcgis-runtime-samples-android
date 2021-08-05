@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
+import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.R;
 import com.esri.arcgisruntime.sample.displaymap.location.spinner.ItemData;
 import com.esri.arcgisruntime.sample.displaymap.location.spinner.SpinnerAdapter;
@@ -25,7 +26,7 @@ public class LocationDisplayer {
     private final String[] reqPermissions = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission
             .ACCESS_COARSE_LOCATION };
 
-    public void displayGPSServices(LocationDisplay locationDisplay, Spinner spinner, Activity mainActivity) {
+    public void displayGPSServices(LocationDisplay locationDisplay, Spinner spinner, Activity mainActivity, MapView mapView) {
 
         locationDisplay.addDataSourceStatusChangedListener(dataSourceStatusChangedEvent -> {
 
@@ -90,6 +91,7 @@ public class LocationDisplayer {
                         if (!locationDisplay.isStarted())
                             locationDisplay.startAsync();
                         break;
+
                     case 4:
                         locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.COMPASS_NAVIGATION);
                         if (!locationDisplay.isStarted())

@@ -1,11 +1,21 @@
 package com.esri.arcgisruntime.sample.displaymap;
 
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
@@ -16,6 +26,7 @@ import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.sample.displaymap.TransparencySlider.Slider;
+import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.LocationChangeListener;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
     private Spinner spinner;
 
+    private TextView avalancheDangerLabel;
+
     private LocationDisplayer locationDisplayer;
+
+    private FeatureLayerHandler featureLayerHandler;
 
     public MainActivity() {
 
@@ -34,8 +49,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        avalancheDangerLabel = new TextView(this);
+        avalancheDangerLabel.setText("Изключен GPS");
+        avalancheDangerLabel.setTextColor(Color.WHITE);
+        avalancheDangerLabel.setPadding(5, 0, 100, 0);
+        avalancheDangerLabel.setTypeface(null, Typeface.BOLD);
+        avalancheDangerLabel.setTextSize(14);
+        avalancheDangerLabel.setId(0);
+        menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, this);
+        locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer(), avalancheDangerLabel);
+
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        System.out.println("Main map");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -47,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
-        FeatureLayerHandler featureLayerHandler = new FeatureLayerHandler(this, mapView);
+        featureLayerHandler = new FeatureLayerHandler(this, mapView, locationDisplay);
         featureLayerHandler.displayBoundaryLayer(
                 featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
         featureLayerHandler.displayBoundaryLayer(
@@ -58,7 +92,18 @@ public class MainActivity extends AppCompatActivity {
 
         featureLayerHandler.displayChangeFeatureLayerIcon();
 
-        locationDisplayer.displayGPSServices(locationDisplay, spinner, this);
+        locationDisplayer.displayGPSServices(locationDisplay, spinner, this, mapView);
+        //LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, this);
+        //locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer(), avalancheDangerLabel);
+
+        /*LayoutInflater inflator = LayoutInflater.from(this);
+        View v = inflator.inflate(R.layout.warning_text_layout, null);
+        ((LinearLayout) v).setGravity(Gravity.RIGHT);
+
+        ActionBar mActionBar = getSupportActionBar();
+        mActionBar.setDisplayShowHomeEnabled(false);
+        mActionBar.setDisplayShowTitleEnabled(false);
+        LayoutInflater mInflater = LayoutInflater.from(this);*/
     }
 
     @Override
