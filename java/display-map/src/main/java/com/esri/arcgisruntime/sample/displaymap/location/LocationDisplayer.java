@@ -12,8 +12,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
-import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.R;
+import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.LocationChangeListener;
 import com.esri.arcgisruntime.sample.displaymap.location.spinner.ItemData;
 import com.esri.arcgisruntime.sample.displaymap.location.spinner.SpinnerAdapter;
 
@@ -26,7 +26,7 @@ public class LocationDisplayer {
     private final String[] reqPermissions = { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission
             .ACCESS_COARSE_LOCATION };
 
-    public void displayGPSServices(LocationDisplay locationDisplay, Spinner spinner, Activity mainActivity, MapView mapView) {
+    public void displayGPSServices(LocationDisplay locationDisplay, Spinner spinner, Activity mainActivity) {
 
         locationDisplay.addDataSourceStatusChangedListener(dataSourceStatusChangedEvent -> {
 
@@ -59,8 +59,6 @@ public class LocationDisplayer {
         gpsOptions.add(new ItemData("GPS спрян", R.drawable.locationdisplaydisabled));
         gpsOptions.add(new ItemData("GPS включен", R.drawable.locationdisplayon));
         gpsOptions.add(new ItemData("GPS центриран", R.drawable.locationdisplayrecenter));
-        gpsOptions.add(new ItemData("Навигация", R.drawable.locationdisplaynavigation));
-        gpsOptions.add(new ItemData("Компас", R.drawable.locationdisplayheading));
 
         SpinnerAdapter adapter = new SpinnerAdapter(mainActivity, R.layout.spinner_layout, R.id.txt, gpsOptions);
         spinner.setAdapter(adapter);
@@ -71,31 +69,25 @@ public class LocationDisplayer {
 
                 switch (position) {
                     case 0:
-                        if (locationDisplay.isStarted())
+                        if (locationDisplay.isStarted()) {
+
                             locationDisplay.stop();
+                        }
                         break;
 
                     case 1:
-                        if (!locationDisplay.isStarted())
+                        if (!locationDisplay.isStarted()) {
+
                             locationDisplay.startAsync();
+                        }
                         break;
 
                     case 2:
                         locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
-                        if (!locationDisplay.isStarted())
-                            locationDisplay.startAsync();
-                        break;
+                        if (!locationDisplay.isStarted()) {
 
-                    case 3:
-                        locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.NAVIGATION);
-                        if (!locationDisplay.isStarted())
                             locationDisplay.startAsync();
-                        break;
-
-                    case 4:
-                        locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.COMPASS_NAVIGATION);
-                        if (!locationDisplay.isStarted())
-                            locationDisplay.startAsync();
+                        }
                         break;
                 }
             }

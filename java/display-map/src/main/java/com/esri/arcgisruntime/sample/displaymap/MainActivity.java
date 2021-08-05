@@ -53,12 +53,11 @@ public class MainActivity extends AppCompatActivity {
                 featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
         featureLayerHandler.displayBoundaryLayer(
                 featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL));
-        featureLayerHandler.displayChangeFeatureLayerIcon();
 
         Slider transparencySlider = new Slider(this, mapView, featureLayerHandler);
         transparencySlider.createSlider();
 
-        new LocationDisplayer().displayGPSServices(locationDisplay, spinner, this, mapView);
+        featureLayerHandler.displayChangeFeatureLayerIcon();
     }
 
     @Override
@@ -66,15 +65,17 @@ public class MainActivity extends AppCompatActivity {
 
         TextView avalancheDangerLabel = new TextView(this);
         avalancheDangerLabel.setText("Изключен GPS");
-        avalancheDangerLabel.setTextColor(Color.WHITE);
-        avalancheDangerLabel.setPadding(5, 0, 100, 0);
+        avalancheDangerLabel.setTextColor(Color.GREEN);
+        avalancheDangerLabel.setPadding(0, 0, 50, 0);
         avalancheDangerLabel.setTypeface(null, Typeface.BOLD);
         avalancheDangerLabel.setTextSize(14);
         avalancheDangerLabel.setId(0);
         menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, this);
-        locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer(), avalancheDangerLabel);
+        LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, avalancheDangerLabel);
+        locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer());
+
+        new LocationDisplayer().displayGPSServices(locationDisplay, spinner, this);
 
         return true;
     }

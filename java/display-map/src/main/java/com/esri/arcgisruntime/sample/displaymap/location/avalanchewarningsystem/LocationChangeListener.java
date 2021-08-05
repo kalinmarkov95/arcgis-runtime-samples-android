@@ -1,6 +1,6 @@
 package com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem;
 
-import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.widget.TextView;
 
@@ -20,13 +20,16 @@ public class LocationChangeListener {
 
     private LocationDisplay locationDisplay;
 
-    public LocationChangeListener(MapView mapView, LocationDisplay locationDisplay, Context context) {
+    private TextView avalancheDangerLabel;
+
+    public LocationChangeListener(MapView mapView, LocationDisplay locationDisplay, TextView avalancheDangerLabel) {
 
         this.mapView = mapView;
         this.locationDisplay = locationDisplay;
+        this.avalancheDangerLabel = avalancheDangerLabel;
     }
 
-    public void alertIfLocationInAvalancheTerrain(FeatureLayer avalancheLayer, TextView avalancheDangerLabel) {
+    public void alertIfLocationInAvalancheTerrain(FeatureLayer avalancheLayer) {
 
         locationDisplay.addLocationChangedListener(locationChangedEvent -> {
 
@@ -45,10 +48,8 @@ public class LocationChangeListener {
                         List<GeoElement> elements = identifyLayerResult.getElements();
                         if(elements.size() == 0) {
 
-                            String text = "Няма лавинни данни!";
-                            if (!avalancheDangerLabel.getText().equals(text)) {
-                                avalancheDangerLabel.setText(text);
-                            }
+                            setTextView("Няма лавинни данни!");
+                            avalancheDangerLabel.setTextColor(Color.GREEN);
                         } else {
 
                             for (GeoElement element : elements) {
@@ -71,53 +72,46 @@ public class LocationChangeListener {
             }
         });
     }
-    private void setTextAccordingToDangerLevel(AvalancheWarningLevel newAvalancheDanger, TextView avalancheDangerLabel) {
 
-        String text;
+    private void setTextAccordingToDangerLevel(AvalancheWarningLevel newAvalancheDanger, TextView avalancheDangerLabel) {
 
         switch (newAvalancheDanger.ordinal()) {
 
             case 0:
-                text = "На безопасно място";
-                if (!avalancheDangerLabel.getText().equals(text)) {
-
-                    avalancheDangerLabel.setText(text);
-                }
+                setTextView("На безопасно място");
+                avalancheDangerLabel.setTextColor(Color.GREEN);
                 break;
 
             case 1:
-                text = "На безопасно място";
-                if (!avalancheDangerLabel.getText().equals(text)) {
-
-                    avalancheDangerLabel.setText(text);
-                }
+                setTextView("На безопасно място");
+                avalancheDangerLabel.setTextColor(Color.GREEN);
                 break;
 
             case 2:
-                text = "Внимание!";
-                if (!avalancheDangerLabel.getText().equals(text)) {
-
-                    avalancheDangerLabel.setText(text);
-                }
+                setTextView("Внимание!");
+                avalancheDangerLabel.setTextColor(Color.MAGENTA);
                 break;
 
             case 3:
-                text = "В опасност!";
-                if (!avalancheDangerLabel.getText().equals(text)) {
-
-                    avalancheDangerLabel.setText(text);
-                }
+                setTextView("В опасност!");
+                avalancheDangerLabel.setTextColor(Color.RED);
                 break;
 
             case 4:
-                text = "Огромен риск!";
-                if (!avalancheDangerLabel.getText().equals(text)) {
-                    avalancheDangerLabel.setText(text);
-                }
+                setTextView("Огромен риск!");
+                avalancheDangerLabel.setTextColor(Color.RED);
                 break;
 
             default:
                 break;
+        }
+    }
+
+    public void setTextView(String text) {
+
+        if (!avalancheDangerLabel.getText().equals(text)) {
+
+            avalancheDangerLabel.setText(text);
         }
     }
 }
