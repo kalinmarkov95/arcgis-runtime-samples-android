@@ -1,10 +1,17 @@
 package com.esri.arcgisruntime.sample.displaymap;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Spinner;
@@ -143,14 +150,17 @@ public class MainActivity extends AppCompatActivity {
 
                     case 2:
                         updateLabel("Внимание!", Color.MAGENTA);
+                        vibrateAndSoundAlarm();
                         break;
 
                     case 3:
                         updateLabel("В опасност!", Color.RED);
+                        vibrateAndSoundAlarm();
                         break;
 
                     case 4:
                         updateLabel("Огромен риск!", Color.RED);
+                        vibrateAndSoundAlarm();
                         break;
 
                     default:
@@ -160,19 +170,39 @@ public class MainActivity extends AppCompatActivity {
 
             private void updateLabel(String text, int color) {
 
-                runOnUiThread(
-                    () -> {
+                if(!avalancheDangerLabel.getText().equals(text) || avalancheDangerLabel.getTextColors().getDefaultColor() == color) {
 
-                        menu.removeItem(0);
+                    runOnUiThread(
 
-                        avalancheDangerLabel.setTextColor(color);
-                        avalancheDangerLabel.setText(text);
+                        () -> {
 
-                        menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).
-                                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                    });
+                            menu.removeItem(0);
+                            avalancheDangerLabel.setTextColor(color);
+                            avalancheDangerLabel.setText(text);
+                            menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).
+                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                        }
+                    );
+                }
             }
-        }, 0, 2000);
+
+            private void vibrateAndSoundAlarm() {
+
+                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                r.play();
+
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                    v.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+                } else {
+
+                    v.vibrate(500);
+                }
+            }
+        }, 0, 1000);
 
         new LocationDisplayer().displayGPSServices(locationDisplay, spinner, this);
 
