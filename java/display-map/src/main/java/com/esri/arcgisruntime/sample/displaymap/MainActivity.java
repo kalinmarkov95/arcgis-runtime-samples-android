@@ -14,6 +14,9 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +38,7 @@ import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler
 import com.esri.arcgisruntime.sample.displaymap.TransparencySlider.Slider;
 import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.AvalancheWarningLevel;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
+import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
 
 import java.util.List;
 import java.util.Timer;
@@ -98,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Point screenPoint = mapView.locationToScreen(locationDisplay.getMapLocation());
                     ListenableFuture<IdentifyLayerResult> identifyLayerResultFuture = mapView
-                            .identifyLayerAsync(featureLayerHandler.getAvalancheLayer(), screenPoint, 1, false, -1);
+                            .identifyLayerAsync(featureLayerHandler.getAvalancheLayer(), screenPoint, 0.01, false, -1);
 
                     identifyLayerResultFuture.addDoneListener(() -> {
 
@@ -179,6 +183,21 @@ public class MainActivity extends AppCompatActivity {
                             menu.removeItem(0);
                             avalancheDangerLabel.setTextColor(color);
                             avalancheDangerLabel.setText(text);
+                            
+                            if(text.equals("Внимание!") || text.equals("В опасност!") || text.equals("Огромен риск!")) {
+
+                                Animation anim = new AlphaAnimation(0.0f, 1.0f);
+                                anim.setDuration(500);
+                                anim.setStartOffset(20);
+                                anim.setRepeatMode(Animation.REVERSE);
+                                anim.setRepeatCount(Animation.INFINITE);
+                                avalancheDangerLabel.startAnimation(anim);
+                                avalancheDangerLabel.setTextSize(16);
+                            } else {
+
+                                avalancheDangerLabel.clearAnimation();
+                                avalancheDangerLabel.setTextSize(14);
+                            }
                             menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).
                                     setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                         }
