@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.sample.displaymap.R;
-import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.LocationChangeListener;
 import com.esri.arcgisruntime.sample.displaymap.location.spinner.ItemData;
 import com.esri.arcgisruntime.sample.displaymap.location.spinner.SpinnerAdapter;
 

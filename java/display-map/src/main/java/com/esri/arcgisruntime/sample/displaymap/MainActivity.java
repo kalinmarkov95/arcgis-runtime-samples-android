@@ -2,6 +2,7 @@ package com.esri.arcgisruntime.sample.displaymap;
 
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,15 +15,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
+import com.esri.arcgisruntime.concurrent.ListenableFuture;
+import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
+import com.esri.arcgisruntime.mapping.GeoElement;
 import com.esri.arcgisruntime.mapping.Viewpoint;
+import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.sample.displaymap.TransparencySlider.Slider;
-import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.LocationChangeListener;
+import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.AvalancheWarningLevel;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
+
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,8 +81,98 @@ public class MainActivity extends AppCompatActivity {
         avalancheDangerLabel.setId(0);
         menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        LocationChangeListener locationChangeListener = new LocationChangeListener(mapView, locationDisplay, avalancheDangerLabel);
-        locationChangeListener.alertIfLocationInAvalancheTerrain(featureLayerHandler.getAvalancheLayer());
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+
+                if (locationDisplay.isStarted()) {
+
+                    Point screenPoint = mapView.locationToScreen(locationDisplay.getMapLocation());
+                    ListenableFuture<IdentifyLayerResult> identifyLayerResultFuture = mapView
+                            .identifyLayerAsync(featureLayerHandler.getAvalancheLayer(), screenPoint, 1, false, -1);
+
+                    identifyLayerResultFuture.addDoneListener(() -> {
+
+                        try {
+
+                            IdentifyLayerResult identifyLayerResult = identifyLayerResultFuture.get();
+
+                            List<GeoElement> elements = identifyLayerResult.getElements();
+                            if (elements.size() == 0) {
+
+                                updateLabel("Няма лавинни данни!", Color.GREEN);
+                            } else {
+
+                                for (GeoElement element : elements) {
+
+                                    if (element instanceof Feature) {
+
+                                        Feature feature = (Feature) element;
+                                        AvalancheWarningLevel newAvalancheDanger = AvalancheWarningLevel.getRespectiveWarningLevel(
+                                                (String) feature.getAttributes().get("AvalDanger"));
+
+                                        setTextAccordingToDangerLevel(newAvalancheDanger, avalancheDangerLabel);
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+
+                            // TODO - improve error handling
+                        }
+                    });
+                } else {
+
+                    updateLabel("Изключен GPS", Color.GREEN);
+                }
+            }
+
+            private void setTextAccordingToDangerLevel(AvalancheWarningLevel newAvalancheDanger, TextView avalancheDangerLabel) {
+
+                switch (newAvalancheDanger.ordinal()) {
+
+                    case 0:
+                        updateLabel("На безопасно място", Color.GREEN);
+                        break;
+
+                    case 1:
+                        updateLabel("На безопасно място", Color.GREEN);
+                        break;
+
+                    case 2:
+                        updateLabel("Внимание!", Color.MAGENTA);
+                        break;
+
+                    case 3:
+                        updateLabel("В опасност!", Color.RED);
+                        break;
+
+                    case 4:
+                        updateLabel("Огромен риск!", Color.RED);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            private void updateLabel(String text, int color) {
+
+                runOnUiThread(
+                    () -> {
+
+                        menu.removeItem(0);
+
+                        avalancheDangerLabel.setTextColor(color);
+                        avalancheDangerLabel.setText(text);
+
+                        menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).
+                                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                    });
+            }
+        }, 0, 2000);
 
         new LocationDisplayer().displayGPSServices(locationDisplay, spinner, this);
 
@@ -119,4 +218,3 @@ public class MainActivity extends AppCompatActivity {
         mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
     }
 }
-
