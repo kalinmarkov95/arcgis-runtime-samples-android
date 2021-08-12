@@ -1,4 +1,4 @@
-package com.esri.arcgisruntime.sample.displaymap.TransparencySlider;
+package com.esri.arcgisruntime.sample.displaymap.Widgets;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -31,7 +31,7 @@ public class Slider {
     public void createSlider() {
 
         this.seekBar = new SeekBar(context);
-        seekBar.setX(550);
+        seekBar.setX(370);
         seekBar.setY(70);
         seekBar.setProgress(50);
         featureLayerHandler.setOpacity(new Float(0.5));
@@ -81,7 +81,7 @@ public class Slider {
 
         TextView textView = new TextView(context);
         textView.setText("Прозрачност");
-        textView.setX(550);
+        textView.setX(370);
         textView.setGravity(TextSymbol.HorizontalAlignment.CENTER.ordinal());
         textView.setLayoutParams(params);
         textView.setTextColor(Color.BLACK);

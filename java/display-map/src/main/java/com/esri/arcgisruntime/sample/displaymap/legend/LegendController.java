@@ -41,7 +41,7 @@ public class LegendController {
 
     private TextView createSlopeLegendButton() {
 
-        TextView textView = createTextView("Покажи/скрий легенда");
+        TextView textView = createTextView("Покажи/скрий");
         textView.setOnClickListener(view -> {
 
             if(slopeLegend.isShown()) {
@@ -58,7 +58,7 @@ public class LegendController {
 
     private TextView createAvalancheRiskLegendButton() {
 
-        TextView textView = createTextView("Покажи/скрий легенда");
+        TextView textView = createTextView("Покажи/скрий");
         textView.setOnClickListener(view -> {
 
             if(avalancheRiskLegend.isShown()) {

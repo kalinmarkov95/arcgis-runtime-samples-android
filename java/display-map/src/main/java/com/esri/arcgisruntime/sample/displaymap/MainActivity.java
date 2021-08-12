@@ -14,7 +14,6 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Spinner;
@@ -35,9 +34,10 @@ import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
-import com.esri.arcgisruntime.sample.displaymap.TransparencySlider.Slider;
+import com.esri.arcgisruntime.sample.displaymap.Widgets.Slider;
 import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.AvalancheWarningLevel;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
+import com.esri.arcgisruntime.toolkit.compass.Compass;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
 
 import java.util.List;
@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
 
         Slider transparencySlider = new Slider(this, mapView, featureLayerHandler);
         transparencySlider.createSlider();
+
+        addCompass();
+        addScalebar();
 
         featureLayerHandler.displayChangeFeatureLayerIcon();
     }
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                             menu.removeItem(0);
                             avalancheDangerLabel.setTextColor(color);
                             avalancheDangerLabel.setText(text);
-                            
+
                             if(text.equals("Внимание!") || text.equals("В опасност!") || text.equals("Огромен риск!")) {
 
                                 Animation anim = new AlphaAnimation(0.0f, 1.0f);
@@ -265,5 +268,23 @@ public class MainActivity extends AppCompatActivity {
         ArcGISMap map = new ArcGISMap(basemapStyle);
         mapView.setMap(map);
         mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
+    }
+
+    private void addCompass() {
+
+        Compass compass = new Compass(this);
+        compass.setAutoHide(false);
+        compass.setX(50);
+        compass.setY(500);
+
+        compass.addToGeoView(mapView);
+    }
+
+    private void addScalebar() {
+
+        Scalebar scalebar = new Scalebar(this);
+        scalebar.setAlignment(Scalebar.Alignment.LEFT);
+
+        scalebar.addToMapView(mapView);
     }
 }

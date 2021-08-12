@@ -107,7 +107,7 @@ public class FeatureLayerHandler {
         changeFeatureLayerIcon.setBackgroundColor(Color.WHITE);
 
         changeFeatureLayerIcon.setX(10);
-        changeFeatureLayerIcon.setY(1250);
+        changeFeatureLayerIcon.setY(1100);
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         changeFeatureLayerIcon.setLayoutParams(params);
