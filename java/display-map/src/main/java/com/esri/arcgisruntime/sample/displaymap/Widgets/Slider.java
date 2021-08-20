@@ -58,7 +58,7 @@ public class Slider {
 
                 FeatureLayer currentFeatureLayer =
                         featureLayerHandler.getFeatureLayerDisplayStatus().getCurrentFeatureLayer();
-                float transparency = new Float(opacity / 100.0);
+                float transparency = new Float(1 - (opacity / 100.0));
                 featureLayerHandler.setOpacity(transparency);
 
                 switch(currentFeatureLayer.ordinal()) {
