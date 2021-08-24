@@ -34,7 +34,7 @@ public class LegendController {
         this.context = context;
         this.mapView = mapView;
         this.slopeLegend = createLegendForLayer("Наклон в\nградуси", featureLayerHandler.getSlopeLayer1());
-        this.avalancheRiskLegend = createLegendForLayer("Лавинна\nопасност", featureLayerHandler.getAvalancheLayer());
+        this.avalancheRiskLegend = createLegendForLayer("Лавинна\nопасност", featureLayerHandler.getAvalancheLayerPirin());
         this.slopeLegendButton = createSlopeLegendButton();
         this.avalancheRiskLegendButton = createAvalancheRiskLegendButton();
     }

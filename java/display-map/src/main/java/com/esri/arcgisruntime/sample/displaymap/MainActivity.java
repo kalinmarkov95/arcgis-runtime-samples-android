@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
         locationDisplay = mapView.getLocationDisplay();
         spinner = findViewById(R.id.spinner);
 
-        String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
+        //String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
         featureLayerHandler = new FeatureLayerHandler(this, mapView, locationDisplay);
-        featureLayerHandler.displayBoundaryLayer(
-                featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
+        //featureLayerHandler.displayBoundaryLayer(
+        //        featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
         featureLayerHandler.displayBoundaryLayer(
                 featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL));
 
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Point screenPoint = mapView.locationToScreen(locationDisplay.getMapLocation());
                     ListenableFuture<IdentifyLayerResult> identifyLayerResultFuture = mapView
-                            .identifyLayerAsync(featureLayerHandler.getAvalancheLayer(), screenPoint, 0.01, false, -1);
+                            .identifyLayerAsync(featureLayerHandler.getAvalancheLayerEchmishte(), screenPoint, 0.01, false, -1);
 
                     identifyLayerResultFuture.addDoneListener(() -> {
 

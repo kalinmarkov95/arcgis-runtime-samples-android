@@ -20,7 +20,11 @@ public class FeatureLayerHandler {
 
     private FeatureLayerDisplayStatus featureLayerDisplayStatus;
 
-    private FeatureLayer avalancheLayer;
+    private FeatureLayer avalancheLayerEchmishte;
+
+    private FeatureLayer avalancheLayerPirin;
+
+    private FeatureLayer echmishteSlope;
 
     private FeatureLayer slopeLayer1;
 
@@ -43,8 +47,13 @@ public class FeatureLayerHandler {
         this.featureLayerDisplayStatus = new FeatureLayerDisplayStatus(
                 com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.SLOPE);
 
-        this.avalancheLayer = createFeatureLayer(
+        this.avalancheLayerEchmishte = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope1/FeatureServer/0");
+        this.avalancheLayerPirin = createFeatureLayer(
+                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/PirinAvalancheDanger/FeatureServer/0");
+
+        this.echmishteSlope = createFeatureLayer(
+                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/EchmishteSlope/FeatureServer/0");
 
         this.slopeLayer1 = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope11/FeatureServer/0");
@@ -65,9 +74,19 @@ public class FeatureLayerHandler {
         return featureLayerDisplayStatus;
     }
 
-    public FeatureLayer getAvalancheLayer() {
+    public FeatureLayer getAvalancheLayerEchmishte() {
 
-        return avalancheLayer;
+        return avalancheLayerEchmishte;
+    }
+
+    public FeatureLayer getAvalancheLayerPirin() {
+
+        return avalancheLayerPirin;
+    }
+
+    public FeatureLayer getEchmishteSlope() {
+
+        return echmishteSlope;
     }
 
     public FeatureLayer getSlopeLayer1() {
@@ -127,7 +146,8 @@ public class FeatureLayerHandler {
                 case 0:
 
                     removeSlope();
-                    displayFeatureLayer(avalancheLayer);
+                    displayFeatureLayer(avalancheLayerEchmishte);
+                    displayFeatureLayer(avalancheLayerPirin);
 
                     legendController.removeSlopeLegendButton();
                     legendController.removeSlopeLegend();
@@ -138,7 +158,8 @@ public class FeatureLayerHandler {
                     break;
                 case 1:
 
-                    removeFeatureLayer(avalancheLayer);
+                    removeFeatureLayer(avalancheLayerEchmishte);
+                    removeFeatureLayer(avalancheLayerPirin);
                     displaySlope();
 
                     legendController.removeAvalancheRiskLegendButton();
@@ -156,6 +177,7 @@ public class FeatureLayerHandler {
 
     private void displaySlope() {
 
+        displayFeatureLayer(echmishteSlope);
         displayFeatureLayer(slopeLayer1);
         displayFeatureLayer(slopeLayer2);
         displayFeatureLayer(slopeLayer3);
@@ -165,6 +187,7 @@ public class FeatureLayerHandler {
 
     private void removeSlope() {
 
+        removeFeatureLayer(echmishteSlope);
         removeFeatureLayer(slopeLayer1);
         removeFeatureLayer(slopeLayer2);
         removeFeatureLayer(slopeLayer3);

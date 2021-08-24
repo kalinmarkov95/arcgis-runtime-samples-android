@@ -65,6 +65,7 @@ public class Slider {
 
                     case 0:
 
+                        featureLayerHandler.getEchmishteSlope().setOpacity(transparency);
                         featureLayerHandler.getSlopeLayer1().setOpacity(transparency);
                         featureLayerHandler.getSlopeLayer2().setOpacity(transparency);
                         featureLayerHandler.getSlopeLayer3().setOpacity(transparency);
@@ -73,7 +74,8 @@ public class Slider {
                         break;
 
                     case 1:
-                        featureLayerHandler.getAvalancheLayer().setOpacity(transparency);
+                        featureLayerHandler.getAvalancheLayerEchmishte().setOpacity(transparency);
+                        featureLayerHandler.getAvalancheLayerPirin().setOpacity(transparency);
                         break;
                 }
             }

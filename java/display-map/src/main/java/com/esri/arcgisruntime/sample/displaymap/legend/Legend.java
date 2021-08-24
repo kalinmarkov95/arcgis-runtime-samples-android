@@ -49,7 +49,7 @@ public class Legend extends View {
         legendBoxStyle.setStyle(Paint.Style.FILL);
         legendBoxStyle.setColor(Color.BLACK);
 
-        canvas.drawRect(xPosition, yPosition - itemSize/2, xPosition + 250, yPosition + (itemSize * 8), legendBoxStyle);
+        canvas.drawRect(xPosition, yPosition - itemSize/2, xPosition + 250, yPosition + (itemSize * (legendItems.size() + 2)), legendBoxStyle);
 
         canvas.drawText(title.substring(0, title.indexOf("\n")), xPosition, yPosition + itemSize/2, titleStyle);
         yPosition = yPosition + itemSize;
