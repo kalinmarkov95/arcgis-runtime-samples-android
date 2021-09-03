@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.layers.LegendInfo;
@@ -21,28 +23,24 @@ public class LegendController {
 
     private MapView mapView;
 
-    private TextView slopeLegendButton;
+    private TextView legendButton;
 
     private Legend slopeLegend;
 
-    private TextView avalancheRiskLegendButton;
-
     private Legend avalancheRiskLegend;
 
-    public LegendController(Context context, MapView mapView, FeatureLayerHandler featureLayerHandler) {
+    public LegendController(Context context, MapView mapView, FeatureLayerHandler featureLayerHandler, TextView legendButton) {
 
         this.context = context;
         this.mapView = mapView;
         this.slopeLegend = createLegendForLayer("Наклон в\nградуси", featureLayerHandler.getSlopeLayer1());
         this.avalancheRiskLegend = createLegendForLayer("Лавинна\nопасност", featureLayerHandler.getAvalancheLayerPirin());
-        this.slopeLegendButton = createSlopeLegendButton();
-        this.avalancheRiskLegendButton = createAvalancheRiskLegendButton();
+        this.legendButton = legendButton;
     }
 
-    private TextView createSlopeLegendButton() {
+    private void setLegendButtonToSlopeState() {
 
-        TextView textView = createTextView("Покажи/скрий");
-        textView.setOnClickListener(view -> {
+        legendButton.setOnClickListener(view -> {
 
             if(slopeLegend.isShown()) {
 
@@ -52,14 +50,11 @@ public class LegendController {
                 mapView.addView(slopeLegend);
             }
         });
-
-        return textView;
     }
 
-    private TextView createAvalancheRiskLegendButton() {
+    private void setLegendButtonToAvalancheState() {
 
-        TextView textView = createTextView("Покажи/скрий");
-        textView.setOnClickListener(view -> {
+        legendButton.setOnClickListener(view -> {
 
             if(avalancheRiskLegend.isShown()) {
 
@@ -69,8 +64,6 @@ public class LegendController {
                 mapView.addView(avalancheRiskLegend);
             }
         });
-
-        return textView;
     }
 
     private TextView createTextView(String buttonText) {
@@ -86,17 +79,17 @@ public class LegendController {
 
     public void displaySlopeLegendButton() {
 
-        mapView.addView(slopeLegendButton);
-        slopeLegendButton.performClick();
+        setLegendButtonToSlopeState();
+        legendButton.performClick();
     }
 
     public void displayAvalancheRiskLegendButton() {
 
-        mapView.addView(avalancheRiskLegendButton);
-        avalancheRiskLegendButton.performClick();
+        setLegendButtonToAvalancheState();
+        legendButton.performClick();
     }
 
-    public void removeSlopeLegendButton() {
+    /*public void removeSlopeLegendButton() {
 
         mapView.removeView(slopeLegendButton);
     }
@@ -104,7 +97,7 @@ public class LegendController {
     public void removeAvalancheRiskLegendButton() {
 
         mapView.removeView(avalancheRiskLegendButton);
-    }
+    }*/
 
     public void removeSlopeLegend() {
 

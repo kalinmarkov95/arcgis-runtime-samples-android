@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         //String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
-        featureLayerHandler = new FeatureLayerHandler(this, mapView, locationDisplay);
+        featureLayerHandler = new FeatureLayerHandler(this, mapView, findViewById(R.id.showHideLegendButton));
         //featureLayerHandler.displayBoundaryLayer(
         //        featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
         featureLayerHandler.displayBoundaryLayer(

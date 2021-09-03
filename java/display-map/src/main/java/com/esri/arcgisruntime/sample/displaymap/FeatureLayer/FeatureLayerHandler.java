@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.layers.FeatureLayer;
-import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.sample.displaymap.R;
 import com.esri.arcgisruntime.sample.displaymap.legend.LegendController;
@@ -40,7 +40,7 @@ public class FeatureLayerHandler {
 
     private float opacity;
 
-    public FeatureLayerHandler(Context context, MapView mapView, LocationDisplay locationDisplay) {
+    public FeatureLayerHandler(Context context, MapView mapView, TextView legendButton) {
 
         this.context = context;
         this.mapView = mapView;
@@ -66,7 +66,7 @@ public class FeatureLayerHandler {
         this.slopeLayer5 = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/dissolved5/FeatureServer/0");
 
-        this.legendController = new LegendController(context, mapView,this);
+        this.legendController = new LegendController(context, mapView,this, legendButton);
     }
 
     public FeatureLayerDisplayStatus getFeatureLayerDisplayStatus() {
@@ -149,7 +149,7 @@ public class FeatureLayerHandler {
                     displayFeatureLayer(avalancheLayerEchmishte);
                     displayFeatureLayer(avalancheLayerPirin);
 
-                    legendController.removeSlopeLegendButton();
+                    //legendController.removeSlopeLegendButton();
                     legendController.removeSlopeLegend();
                     legendController.displayAvalancheRiskLegendButton();
 
@@ -162,7 +162,7 @@ public class FeatureLayerHandler {
                     removeFeatureLayer(avalancheLayerPirin);
                     displaySlope();
 
-                    legendController.removeAvalancheRiskLegendButton();
+                    //legendController.removeAvalancheRiskLegendButton();
                     legendController.removeAvalancheRiskLegend();
                     legendController.displaySlopeLegendButton();
 
