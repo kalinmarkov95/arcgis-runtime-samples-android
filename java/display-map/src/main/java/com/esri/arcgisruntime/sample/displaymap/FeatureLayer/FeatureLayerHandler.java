@@ -1,15 +1,12 @@
 package com.esri.arcgisruntime.sample.displaymap.FeatureLayer;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.esri.arcgisruntime.sample.displaymap.R;
 import com.esri.arcgisruntime.sample.displaymap.legend.LegendController;
 
 public class FeatureLayerHandler {
@@ -49,6 +46,7 @@ public class FeatureLayerHandler {
 
         this.avalancheLayerEchmishte = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope1/FeatureServer/0");
+
         this.avalancheLayerPirin = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/PirinAvalancheDanger/FeatureServer/0");
 
@@ -119,22 +117,15 @@ public class FeatureLayerHandler {
         this.opacity = opacity;
     }
 
-    public void displayChangeFeatureLayerIcon() {
+    public void displayChangeFeatureLayerIcon(ImageView changeFeatureLayerIcon, int screenWidth, int screenHeight) {
 
-        ImageView changeFeatureLayerIcon = new ImageView(context);
-        changeFeatureLayerIcon.setImageResource(R.drawable.change_feature_layer);
-        changeFeatureLayerIcon.setBackgroundColor(Color.WHITE);
-
-        changeFeatureLayerIcon.setX(10);
-        changeFeatureLayerIcon.setY(1100);
-
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        changeFeatureLayerIcon.setLayoutParams(params);
-
-        changeFeatureLayerIcon.getLayoutParams().height = 125;
-        changeFeatureLayerIcon.getLayoutParams().width = 125;
+        float xPosition = (float) (screenWidth / 100);
+        float yPosition = (float) (screenHeight * 0.6);
+        changeFeatureLayerIcon.setX(xPosition);
+        changeFeatureLayerIcon.setY(yPosition);
 
         displaySlope();
+
         legendController.displaySlopeLegendButton();
 
         changeFeatureLayerIcon.setOnClickListener(view -> {
@@ -149,7 +140,6 @@ public class FeatureLayerHandler {
                     displayFeatureLayer(avalancheLayerEchmishte);
                     displayFeatureLayer(avalancheLayerPirin);
 
-                    //legendController.removeSlopeLegendButton();
                     legendController.removeSlopeLegend();
                     legendController.displayAvalancheRiskLegendButton();
 
@@ -162,7 +152,6 @@ public class FeatureLayerHandler {
                     removeFeatureLayer(avalancheLayerPirin);
                     displaySlope();
 
-                    //legendController.removeAvalancheRiskLegendButton();
                     legendController.removeAvalancheRiskLegend();
                     legendController.displaySlopeLegendButton();
 
@@ -171,8 +160,6 @@ public class FeatureLayerHandler {
                     break;
             }
         });
-
-        mapView.addView(changeFeatureLayerIcon);
     }
 
     private void displaySlope() {

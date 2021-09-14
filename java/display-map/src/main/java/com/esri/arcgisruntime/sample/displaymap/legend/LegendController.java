@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.layers.LegendInfo;
@@ -66,17 +64,6 @@ public class LegendController {
         });
     }
 
-    private TextView createTextView(String buttonText) {
-
-        TextView textView = new TextView(context);
-        textView.setText(buttonText);
-        textView.setTextSize(15);
-        textView.setTextColor(Color.WHITE);
-        textView.setBackgroundColor(Color.BLACK);
-        textView.setX(10);
-        return textView;
-    }
-
     public void displaySlopeLegendButton() {
 
         setLegendButtonToSlopeState();
@@ -88,16 +75,6 @@ public class LegendController {
         setLegendButtonToAvalancheState();
         legendButton.performClick();
     }
-
-    /*public void removeSlopeLegendButton() {
-
-        mapView.removeView(slopeLegendButton);
-    }
-
-    public void removeAvalancheRiskLegendButton() {
-
-        mapView.removeView(avalancheRiskLegendButton);
-    }*/
 
     public void removeSlopeLegend() {
 
@@ -125,7 +102,7 @@ public class LegendController {
                 legendItems.add(new LegendItem(legendInfo.getName(), symbolSwatch.get()));
             }
 
-            return new Legend(context, legendTitle, legendItems, 10, 90);
+            return new Legend(context, legendTitle, legendItems, 0, 90);
         } catch (Exception e) {
 
             // TODO - handle this exception in some way

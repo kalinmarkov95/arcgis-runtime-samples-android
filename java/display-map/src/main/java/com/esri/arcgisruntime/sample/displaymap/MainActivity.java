@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
@@ -54,8 +55,18 @@ public class MainActivity extends AppCompatActivity {
 
     private Spinner spinner;
 
+    private int screenHeight;
+
+    private int screenWidth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        this.screenHeight = metrics.heightPixels;
+        this.screenWidth = metrics.widthPixels;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -64,23 +75,21 @@ public class MainActivity extends AppCompatActivity {
         displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 1000000);
         locationDisplay = mapView.getLocationDisplay();
         spinner = findViewById(R.id.spinner);
+        spinner.setX((float)(screenWidth * 0.4));
 
-        //String echmishteBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/echmishte_boundary/FeatureServer/0";
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
         featureLayerHandler = new FeatureLayerHandler(this, mapView, findViewById(R.id.showHideLegendButton));
-        //featureLayerHandler.displayBoundaryLayer(
-        //        featureLayerHandler.createFeatureLayer(echmishteBoundaryURL));
         featureLayerHandler.displayBoundaryLayer(
                 featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL));
 
         Slider transparencySlider = new Slider(this, mapView, featureLayerHandler);
-        transparencySlider.createSlider();
+        transparencySlider.createSlider(screenWidth, screenHeight);
 
         addCompass();
         addScalebar();
 
-        featureLayerHandler.displayChangeFeatureLayerIcon();
+        featureLayerHandler.displayChangeFeatureLayerIcon(findViewById(R.id.changeFeatureLayerIcon), screenWidth, screenHeight);
     }
 
     @Override

@@ -23,12 +23,12 @@
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="22dp"
+        android:layout_marginBottom="25dp"
         android:background="#00000000"
         android:overlapAnchor="false"
         android:popupBackground="#00000000"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        tools:layout_editor_absoluteX="81dp" />
 
     <TextView
         android:id="@+id/showHideLegendButton"
@@ -39,5 +39,14 @@
         android:textColor="#FFFFFF"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp" />
+
+    <ImageView
+        android:id="@+id/changeFeatureLayerIcon"
+        android:layout_width="125px"
+        android:layout_height="125px"
+        android:background="#FFFFFF"
+        app:srcCompat="@drawable/change_feature_layer"
+        tools:layout_editor_absoluteX="32dp"
+        tools:layout_editor_absoluteY="381dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

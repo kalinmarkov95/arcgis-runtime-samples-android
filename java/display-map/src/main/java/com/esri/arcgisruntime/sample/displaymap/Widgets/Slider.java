@@ -28,19 +28,18 @@ public class Slider {
         this.featureLayerHandler = featureLayerHandler;
     }
 
-    public void createSlider() {
+    public void createSlider(int screenWidth, int screenHeight) {
 
         this.seekBar = new SeekBar(context);
-        seekBar.setX(370);
-        seekBar.setY(70);
+        seekBar.setX((float)(screenWidth/3.0));
         seekBar.setProgress(50);
         featureLayerHandler.setOpacity(new Float(0.5));
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         seekBar.setLayoutParams(params);
 
-        seekBar.getLayoutParams().height = 75;
-        seekBar.getLayoutParams().width = 400;
+        seekBar.getLayoutParams().height = (int) (screenHeight / 35.0);
+        seekBar.getLayoutParams().width = (int) (screenWidth / 4.0);
         seekBar.setBackgroundColor(Color.WHITE);
 
         seekBar.setMax(100);
@@ -81,15 +80,15 @@ public class Slider {
             }
         });
 
-        TextView textView = new TextView(context);
+        /*TextView textView = new TextView(context);
         textView.setText("Прозрачност");
-        textView.setX(370);
+        textView.setX((float)(screenWidth/3.0));
         textView.setGravity(TextSymbol.HorizontalAlignment.CENTER.ordinal());
         textView.setLayoutParams(params);
         textView.setTextColor(Color.BLACK);
         textView.setBackgroundColor(Color.WHITE);
 
-        mapView.addView(textView);
+        mapView.addView(textView);*/
         mapView.addView(seekBar);
     }
 }
