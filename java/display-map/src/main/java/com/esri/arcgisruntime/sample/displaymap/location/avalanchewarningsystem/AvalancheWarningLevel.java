@@ -2,36 +2,25 @@ package com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem
 
 public enum AvalancheWarningLevel {
 
-    LOW,
-    MODERATE,
-    SIGNIFICANT,
-    HIGH,
-    EXTREME;
+    SIMPLE,
+    CHALLENGING,
+    COMPLEX;
 
     public static AvalancheWarningLevel getRespectiveWarningLevel(String warningLevel) {
 
         switch (warningLevel) {
 
-            case "Безопасно":
-                return LOW;
+            case "Simple":
+                return SIMPLE;
 
-            case "Ниска":
-                return LOW;
+            case "Challenging":
+                return CHALLENGING;
 
-            case "Средна":
-                return MODERATE;
-
-            case "Значителна":
-                return SIGNIFICANT;
-
-            case "Висока":
-                return HIGH;
-
-            case "Много висока":
-                return EXTREME;
+            case "Complex":
+                return COMPLEX;
 
             default:
-                return LOW;
+                return SIMPLE;
         }
     }
 }

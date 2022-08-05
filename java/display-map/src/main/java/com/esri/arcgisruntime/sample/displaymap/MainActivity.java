@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Point screenPoint = mapView.locationToScreen(locationDisplay.getMapLocation());
                     ListenableFuture<IdentifyLayerResult> identifyLayerResultFuture = mapView
-                            .identifyLayerAsync(featureLayerHandler.getAvalancheLayerEchmishte(), screenPoint, 0.01, false, -1);
+                            .identifyLayerAsync(featureLayerHandler.getTodorkaATES(), screenPoint, 0.01, false, -1);
 
                     identifyLayerResultFuture.addDoneListener(() -> {
 
@@ -134,9 +134,9 @@ public class MainActivity extends AppCompatActivity {
 
                                         Feature feature = (Feature) element;
                                         AvalancheWarningLevel newAvalancheDanger = AvalancheWarningLevel.getRespectiveWarningLevel(
-                                                (String) feature.getAttributes().get("AvalDanger"));
+                                                (String) feature.getAttributes().get("ATES"));
 
-                                        setTextAccordingToDangerLevel(newAvalancheDanger, avalancheDangerLabel);
+                                        setTextAccordingToDangerLevel(newAvalancheDanger);
                                         break;
                                     }
                                 }
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            private void setTextAccordingToDangerLevel(AvalancheWarningLevel newAvalancheDanger, TextView avalancheDangerLabel) {
+            private void setTextAccordingToDangerLevel(AvalancheWarningLevel newAvalancheDanger) {
 
                 switch (newAvalancheDanger.ordinal()) {
 
@@ -161,21 +161,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case 1:
-                        updateLabel("На безопасно място", Color.GREEN);
+                        updateLabel("Внимание", Color.MAGENTA);
                         break;
 
                     case 2:
-                        updateLabel("Внимание!", Color.MAGENTA);
-                        vibrateAndSoundAlarm();
-                        break;
-
-                    case 3:
-                        updateLabel("В опасност!", Color.RED);
-                        vibrateAndSoundAlarm();
-                        break;
-
-                    case 4:
-                        updateLabel("Огромен риск!", Color.RED);
+                        updateLabel("Голям риск!", Color.RED);
                         vibrateAndSoundAlarm();
                         break;
 

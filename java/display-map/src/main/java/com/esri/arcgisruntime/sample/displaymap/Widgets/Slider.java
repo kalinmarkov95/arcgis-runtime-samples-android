@@ -73,8 +73,8 @@ public class Slider {
                         break;
 
                     case 1:
-                        featureLayerHandler.getAvalancheLayerEchmishte().setOpacity(transparency);
-                        featureLayerHandler.getAvalancheLayerPirin().setOpacity(transparency);
+
+                        featureLayerHandler.getTodorkaATES().setOpacity(transparency);
                         break;
                 }
             }

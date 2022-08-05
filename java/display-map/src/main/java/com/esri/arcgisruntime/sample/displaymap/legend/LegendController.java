@@ -25,14 +25,14 @@ public class LegendController {
 
     private Legend slopeLegend;
 
-    private Legend avalancheRiskLegend;
+    private Legend todorkaATESLegend;
 
     public LegendController(Context context, MapView mapView, FeatureLayerHandler featureLayerHandler, TextView legendButton) {
 
         this.context = context;
         this.mapView = mapView;
         this.slopeLegend = createLegendForLayer("Наклон в\nградуси", featureLayerHandler.getSlopeLayer1());
-        this.avalancheRiskLegend = createLegendForLayer("Лавинна\nопасност", featureLayerHandler.getAvalancheLayerPirin());
+        this.todorkaATESLegend = createLegendForLayer("Тодорка\nATES", featureLayerHandler.getTodorkaATES());
         this.legendButton = legendButton;
     }
 
@@ -50,16 +50,16 @@ public class LegendController {
         });
     }
 
-    private void setLegendButtonToAvalancheState() {
+    private void setLegendButtonToATESState() {
 
         legendButton.setOnClickListener(view -> {
 
-            if(avalancheRiskLegend.isShown()) {
+            if(todorkaATESLegend.isShown()) {
 
-                mapView.removeView(avalancheRiskLegend);
+                mapView.removeView(todorkaATESLegend);
             } else {
 
-                mapView.addView(avalancheRiskLegend);
+                mapView.addView(todorkaATESLegend);
             }
         });
     }
@@ -70,9 +70,9 @@ public class LegendController {
         legendButton.performClick();
     }
 
-    public void displayAvalancheRiskLegendButton() {
+    public void displayTodorkaATESLegendButton() {
 
-        setLegendButtonToAvalancheState();
+        setLegendButtonToATESState();
         legendButton.performClick();
     }
 
@@ -81,9 +81,9 @@ public class LegendController {
         mapView.removeView(slopeLegend);
     }
 
-    public void removeAvalancheRiskLegend() {
+    public void removeTodorkaATESLegend() {
 
-        mapView.removeView(avalancheRiskLegend);
+        mapView.removeView(todorkaATESLegend);
     }
 
     private Legend createLegendForLayer(String legendTitle, FeatureLayer featureLayer) {

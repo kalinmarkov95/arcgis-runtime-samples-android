@@ -33,6 +33,8 @@ public class FeatureLayerHandler {
 
     private FeatureLayer slopeLayer5;
 
+    private FeatureLayer todorkaATES;
+
     private LegendController legendController;
 
     private float opacity;
@@ -63,6 +65,9 @@ public class FeatureLayerHandler {
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope4/FeatureServer/0");
         this.slopeLayer5 = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/dissolved5/FeatureServer/0");
+
+        this.todorkaATES = createFeatureLayer(
+                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/TodorkaATES/FeatureServer/0");
 
         this.legendController = new LegendController(context, mapView,this, legendButton);
     }
@@ -112,6 +117,11 @@ public class FeatureLayerHandler {
         return slopeLayer5;
     }
 
+    public FeatureLayer getTodorkaATES() {
+
+        return todorkaATES;
+    }
+
     public void setOpacity(float opacity) {
 
         this.opacity = opacity;
@@ -137,22 +147,30 @@ public class FeatureLayerHandler {
                 case 0:
 
                     removeSlope();
-                    displayFeatureLayer(avalancheLayerEchmishte);
-                    displayFeatureLayer(avalancheLayerPirin);
+
+                    // displayFeatureLayer(avalancheLayerEchmishte);
+                    // displayFeatureLayer(avalancheLayerPirin);
+                    displayFeatureLayer(todorkaATES);
 
                     legendController.removeSlopeLegend();
-                    legendController.displayAvalancheRiskLegendButton();
+                    // legendController.displayAvalancheRiskLegendButton();
+                    legendController.displayTodorkaATESLegendButton();
 
+                    // featureLayerDisplayStatus.setCurrentFeatureLayer(
+                    //        com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.AVALANCHE_RISK);
                     featureLayerDisplayStatus.setCurrentFeatureLayer(
-                            com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.AVALANCHE_RISK);
+                            com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.TODORKA_ATES);
+
                     break;
                 case 1:
 
-                    removeFeatureLayer(avalancheLayerEchmishte);
-                    removeFeatureLayer(avalancheLayerPirin);
+                    //removeFeatureLayer(avalancheLayerEchmishte);
+                    //removeFeatureLayer(avalancheLayerPirin);
+                    removeFeatureLayer(todorkaATES);
                     displaySlope();
 
-                    legendController.removeAvalancheRiskLegend();
+                    //legendController.removeAvalancheRiskLegend();
+                    legendController.removeTodorkaATESLegend();
                     legendController.displaySlopeLegendButton();
 
                     featureLayerDisplayStatus.setCurrentFeatureLayer(
