@@ -14,10 +14,10 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     private FeatureLayerHandler featureLayerHandler;
 
-    private Spinner spinner;
-
     private int screenHeight;
 
     private int screenWidth;
@@ -72,10 +70,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
+        ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,rud7105386839,none,NKMFA0PL4S631R1DF239");
+
+
         displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 1000000);
         locationDisplay = mapView.getLocationDisplay();
-        spinner = findViewById(R.id.spinner);
-        spinner.setX((float)(screenWidth * 0.4));
 
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
@@ -86,10 +85,15 @@ public class MainActivity extends AppCompatActivity {
         Slider transparencySlider = new Slider(this, mapView, featureLayerHandler);
         transparencySlider.createSlider(screenWidth, screenHeight);
 
-        addCompass();
-        addScalebar();
+        Compass compass = findViewById(R.id.compass);
+        compass.bindTo(mapView);
 
-        featureLayerHandler.displayChangeFeatureLayerIcon(findViewById(R.id.changeFeatureLayerIcon), screenWidth, screenHeight);
+        Scalebar scalebar = findViewById(R.id.scalebar);
+        scalebar.bindTo(mapView);
+
+        new LocationDisplayer().displayGPSServices(locationDisplay,this);
+
+        featureLayerHandler.displayChangeFeatureLayerIcon(findViewById(R.id.changeFeatureLayerIcon));
     }
 
     @Override
@@ -103,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
         avalancheDangerLabel.setTextSize(14);
         avalancheDangerLabel.setId(0);
         menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
 
         Timer t = new Timer();
         t.schedule(new TimerTask() {
@@ -225,8 +232,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 0, 1000);
 
-        new LocationDisplayer().displayGPSServices(locationDisplay, spinner, this);
-
         return true;
     }
 
@@ -239,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
 
             Toast.makeText(this, getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
-            spinner.setSelection(0, true);
+            locationDisplay.stop();
         }
     }
 
@@ -261,7 +266,11 @@ public class MainActivity extends AppCompatActivity {
         mapView.dispose();
     }
 
-    private void displayBaseMap(BasemapStyle basemapStyle, double initialLat, double initialLong, int scale) {
+    private void displayBaseMap(
+            BasemapStyle basemapStyle,
+            double initialLat,
+            double initialLong,
+            int scale) {
 
         mapView = findViewById(R.id.mapView);
         ArcGISMap map = new ArcGISMap(basemapStyle);
@@ -269,21 +278,20 @@ public class MainActivity extends AppCompatActivity {
         mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
     }
 
-    private void addCompass() {
+    public void setGPSOff(MenuItem item) {
 
-        Compass compass = new Compass(this);
-        compass.setAutoHide(false);
-        compass.setX(50);
-        compass.setY(500);
+        if (locationDisplay.isStarted()) {
 
-        compass.addToGeoView(mapView);
+            locationDisplay.stop();
+        }
     }
 
-    private void addScalebar() {
+    public void setGPSOn(MenuItem item) {
 
-        Scalebar scalebar = new Scalebar(this);
-        scalebar.setAlignment(Scalebar.Alignment.LEFT);
+        locationDisplay.setAutoPanMode(LocationDisplay.AutoPanMode.RECENTER);
+        if (!locationDisplay.isStarted()) {
 
-        scalebar.addToMapView(mapView);
+            locationDisplay.startAsync();
+        }
     }
 }

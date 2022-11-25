@@ -11,8 +11,6 @@ import com.esri.arcgisruntime.sample.displaymap.legend.LegendController;
 
 public class FeatureLayerHandler {
 
-    private Context context;
-
     private MapView mapView;
 
     private FeatureLayerDisplayStatus featureLayerDisplayStatus;
@@ -41,7 +39,6 @@ public class FeatureLayerHandler {
 
     public FeatureLayerHandler(Context context, MapView mapView, TextView legendButton) {
 
-        this.context = context;
         this.mapView = mapView;
         this.featureLayerDisplayStatus = new FeatureLayerDisplayStatus(
                 com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.SLOPE);
@@ -127,12 +124,7 @@ public class FeatureLayerHandler {
         this.opacity = opacity;
     }
 
-    public void displayChangeFeatureLayerIcon(ImageView changeFeatureLayerIcon, int screenWidth, int screenHeight) {
-
-        float xPosition = (float) (screenWidth / 100);
-        float yPosition = (float) (screenHeight * 0.6);
-        changeFeatureLayerIcon.setX(xPosition);
-        changeFeatureLayerIcon.setY(yPosition);
+    public void displayChangeFeatureLayerIcon(ImageView changeFeatureLayerIcon) {
 
         displaySlope();
 

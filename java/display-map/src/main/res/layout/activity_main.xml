@@ -10,43 +10,66 @@
     tools:context=".MainActivity">
 
     <!-- MapView -->
-    <com.esri.arcgisruntime.mapping.view.MapView
-        android:id="@+id/mapView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></com.esri.arcgisruntime.mapping.view.MapView>
+        android:layout_height="match_parent">
+        <com.esri.arcgisruntime.mapping.view.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+        </com.esri.arcgisruntime.mapping.view.MapView>
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-        android:background="#00000000"
-        android:overlapAnchor="false"
-        android:popupBackground="#00000000"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="81dp" />
 
-    <TextView
-        android:id="@+id/showHideLegendButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#000000"
-        android:text="Покажи/скрий"
-        android:textColor="#FFFFFF"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="16dp" />
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00000000"
+            android:overlapAnchor="false"
+            android:popupBackground="#00000000"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"/>
 
-    <ImageView
-        android:id="@+id/changeFeatureLayerIcon"
-        android:layout_width="125px"
-        android:layout_height="125px"
-        android:background="#FFFFFF"
-        app:srcCompat="@drawable/change_feature_layer"
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="381dp" />
+        <TextView
+            android:id="@+id/showHideLegendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#000000"
+            android:text="Покажи/скрий"
+            android:textColor="#FFFFFF" />
+
+        <ImageView
+            android:id="@+id/changeFeatureLayerIcon"
+            android:layout_width="125px"
+            android:layout_height="125px"
+            android:background="#FFFFFF"
+            app:srcCompat="@drawable/change_feature_layer"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"/>
+
+        <com.esri.arcgisruntime.toolkit.compass.Compass
+            android:id="@+id/compass"
+            android:layout_width="125px"
+            android:layout_height="125px"
+            android:layout_below="@+id/changeFeatureLayerIcon"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"
+            app:autoHide="false"
+            />
+
+        <com.esri.arcgisruntime.toolkit.scalebar.Scalebar
+            android:id="@+id/scalebar"
+            android:layout_width="200dp"
+            android:layout_height="100px"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="25dp"/>
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
