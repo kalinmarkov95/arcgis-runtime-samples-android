@@ -19,36 +19,16 @@ public class LegendController {
 
     private Context context;
 
-    //private GeoView geoView;
-
     private TextView legendButton;
-
-    private Legend slopeLegend;
 
     private Legend todorkaATESLegend;
 
     public LegendController(Context context, FeatureLayerHandler featureLayerHandler, TextView legendButton) {
 
         this.context = context;
-        //this.geoView = geoView;
-        //this.slopeLegend = createLegendForLayer("Наклон в\nградуси", featureLayerHandler.getSlopeLayer1());
         this.todorkaATESLegend = createLegendForLayer("Тодорка\nATES", featureLayerHandler.getTodorkaATES());
         this.legendButton = legendButton;
     }
-
-   /* private void setLegendButtonToSlopeState() {
-
-        legendButton.setOnClickListener(view -> {
-
-            if(slopeLegend.isShown()) {
-
-                geoView.removeView(slopeLegend);
-            } else {
-
-                geoView.addView(slopeLegend);
-            }
-        });
-    }*/
 
     private void setLegendButtonToATESState(GeoView geoView) {
 
@@ -64,22 +44,11 @@ public class LegendController {
         });
     }
 
-   /* public void displaySlopeLegendButton() {
-
-        setLegendButtonToSlopeState();
-        legendButton.performClick();
-    }*/
-
     public void displayTodorkaATESLegendButton(GeoView geoView) {
 
         setLegendButtonToATESState(geoView);
         legendButton.performClick();
     }
-
-    /*public void removeSlopeLegend() {
-
-        geoView.removeView(slopeLegend);
-    }*/
 
     public void removeTodorkaATESLegend(GeoView geoView) {
 

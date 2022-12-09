@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.SeekBar;
 
 import com.esri.arcgisruntime.mapping.view.GeoView;
-import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 
 public class Slider {
@@ -55,42 +54,12 @@ public class Slider {
             @Override
             public void onProgressChanged(SeekBar seekBar, int opacity, boolean fromUser) {
 
-               /* FeatureLayer currentFeatureLayer =
-                        featureLayerHandler.getFeatureLayerDisplayStatus().getGeoView();*/
                 float transparency = new Float(1 - (opacity / 100.0));
                 featureLayerHandler.setOpacity(transparency);
                 featureLayerHandler.getTodorkaATES().setOpacity(transparency);
-
-                /*switch(currentFeatureLayer.ordinal()) {
-
-                    case 0:
-
-                        *//*featureLayerHandler.getEchmishteSlope().setOpacity(transparency);
-                        featureLayerHandler.getSlopeLayer1().setOpacity(transparency);
-                        featureLayerHandler.getSlopeLayer2().setOpacity(transparency);
-                        featureLayerHandler.getSlopeLayer3().setOpacity(transparency);
-                        featureLayerHandler.getSlopeLayer4().setOpacity(transparency);
-                        featureLayerHandler.getSlopeLayer5().setOpacity(transparency);*//*
-                        featureLayerHandler.getTodorkaATES().setOpacity(transparency);
-                        break;
-
-                    case 1:
-
-                        featureLayerHandler.getTodorkaATES().setOpacity(transparency);
-                        break;
-                }*/
             }
         });
-
-        /*TextView textView = new TextView(context);
-        textView.setText("Прозрачност");
-        textView.setX((float)(screenWidth/3.0));
-        textView.setGravity(TextSymbol.HorizontalAlignment.CENTER.ordinal());
-        textView.setLayoutParams(params);
-        textView.setTextColor(Color.BLACK);
-        textView.setBackgroundColor(Color.WHITE);
-
-        mapView.addView(textView);*/
+        
         geoView.addView(seekBar);
     }
 }

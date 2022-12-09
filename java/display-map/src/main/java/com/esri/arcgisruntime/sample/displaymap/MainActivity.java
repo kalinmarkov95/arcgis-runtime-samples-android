@@ -31,11 +31,9 @@ import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
 import com.esri.arcgisruntime.mapping.ArcGISScene;
 import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource;
-import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.GeoElement;
 import com.esri.arcgisruntime.mapping.Viewpoint;
-import com.esri.arcgisruntime.mapping.view.Camera;
 import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
@@ -43,7 +41,6 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.mapping.view.SceneView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.sample.displaymap.Widgets.Slider;
-import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.AvalancheWarningLevel;
 import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
 import com.esri.arcgisruntime.toolkit.compass.Compass;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
@@ -240,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     v.vibrate(500);
                 }
             }
-        }, 0, 5000);
+        }, 0, 2000);
 
         return true;
     }
@@ -300,9 +297,6 @@ public class MainActivity extends AppCompatActivity {
        scene.getBaseSurface().getElevationSources().add(elevationSource);
        sceneView.setScene(scene);
        sceneView.setVisibility(View.INVISIBLE);
-
-       //Camera camera = new Camera(initialLat, initialLong, 3000.0, 10.0, 80.0, 0.0);
-       //sceneView.setViewpointCamera(camera);
 
         // on viewpoint change synchronize viewpoints
         mapView.addViewpointChangedListener(viewpointChangedEvent -> synchronizeViewpoints(mapView, sceneView));
