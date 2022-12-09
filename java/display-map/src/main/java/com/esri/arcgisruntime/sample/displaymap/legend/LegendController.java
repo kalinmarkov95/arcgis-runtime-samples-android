@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.layers.LegendInfo;
-import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.symbology.Symbol;
 
@@ -19,7 +19,7 @@ public class LegendController {
 
     private Context context;
 
-    private MapView mapView;
+    //private GeoView geoView;
 
     private TextView legendButton;
 
@@ -27,63 +27,63 @@ public class LegendController {
 
     private Legend todorkaATESLegend;
 
-    public LegendController(Context context, MapView mapView, FeatureLayerHandler featureLayerHandler, TextView legendButton) {
+    public LegendController(Context context, FeatureLayerHandler featureLayerHandler, TextView legendButton) {
 
         this.context = context;
-        this.mapView = mapView;
-        this.slopeLegend = createLegendForLayer("Наклон в\nградуси", featureLayerHandler.getSlopeLayer1());
+        //this.geoView = geoView;
+        //this.slopeLegend = createLegendForLayer("Наклон в\nградуси", featureLayerHandler.getSlopeLayer1());
         this.todorkaATESLegend = createLegendForLayer("Тодорка\nATES", featureLayerHandler.getTodorkaATES());
         this.legendButton = legendButton;
     }
 
-    private void setLegendButtonToSlopeState() {
+   /* private void setLegendButtonToSlopeState() {
 
         legendButton.setOnClickListener(view -> {
 
             if(slopeLegend.isShown()) {
 
-                mapView.removeView(slopeLegend);
+                geoView.removeView(slopeLegend);
             } else {
 
-                mapView.addView(slopeLegend);
+                geoView.addView(slopeLegend);
             }
         });
-    }
+    }*/
 
-    private void setLegendButtonToATESState() {
+    private void setLegendButtonToATESState(GeoView geoView) {
 
         legendButton.setOnClickListener(view -> {
 
             if(todorkaATESLegend.isShown()) {
 
-                mapView.removeView(todorkaATESLegend);
+                geoView.removeView(todorkaATESLegend);
             } else {
 
-                mapView.addView(todorkaATESLegend);
+                geoView.addView(todorkaATESLegend);
             }
         });
     }
 
-    public void displaySlopeLegendButton() {
+   /* public void displaySlopeLegendButton() {
 
         setLegendButtonToSlopeState();
         legendButton.performClick();
-    }
+    }*/
 
-    public void displayTodorkaATESLegendButton() {
+    public void displayTodorkaATESLegendButton(GeoView geoView) {
 
-        setLegendButtonToATESState();
+        setLegendButtonToATESState(geoView);
         legendButton.performClick();
     }
 
-    public void removeSlopeLegend() {
+    /*public void removeSlopeLegend() {
 
-        mapView.removeView(slopeLegend);
-    }
+        geoView.removeView(slopeLegend);
+    }*/
 
-    public void removeTodorkaATESLegend() {
+    public void removeTodorkaATESLegend(GeoView geoView) {
 
-        mapView.removeView(todorkaATESLegend);
+        geoView.removeView(todorkaATESLegend);
     }
 
     private Legend createLegendForLayer(String legendTitle, FeatureLayer featureLayer) {

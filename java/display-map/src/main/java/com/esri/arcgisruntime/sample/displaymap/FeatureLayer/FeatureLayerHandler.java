@@ -1,21 +1,36 @@
 package com.esri.arcgisruntime.sample.displaymap.FeatureLayer;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.esri.arcgisruntime.data.ServiceFeatureTable;
+import com.esri.arcgisruntime.geometry.GeometryEngine;
+import com.esri.arcgisruntime.geometry.Point;
+import com.esri.arcgisruntime.geometry.SpatialReferences;
 import com.esri.arcgisruntime.layers.FeatureLayer;
+import com.esri.arcgisruntime.mapping.view.Camera;
+import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.mapping.view.SceneView;
+import com.esri.arcgisruntime.sample.displaymap.R;
 import com.esri.arcgisruntime.sample.displaymap.legend.LegendController;
+import com.esri.arcgisruntime.toolkit.compass.Compass;
+import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
+
+import java.util.Map;
 
 public class FeatureLayerHandler {
 
     private MapView mapView;
 
-    private FeatureLayerDisplayStatus featureLayerDisplayStatus;
+    private SceneView sceneView;
 
-    private FeatureLayer avalancheLayerEchmishte;
+    private GeoViewDisplayStatus geoViewDisplayStatus;
+
+    /*private FeatureLayer avalancheLayerEchmishte;
 
     private FeatureLayer avalancheLayerPirin;
 
@@ -29,21 +44,28 @@ public class FeatureLayerHandler {
 
     private FeatureLayer slopeLayer4;
 
-    private FeatureLayer slopeLayer5;
+    private FeatureLayer slopeLayer5;*/
 
     private FeatureLayer todorkaATES;
 
-    private LegendController legendController;
+    private LegendController legendControllerView;
+
+    private LegendController legendControllerSceneView;
 
     private float opacity;
 
-    public FeatureLayerHandler(Context context, MapView mapView, TextView legendButton) {
+    public FeatureLayerHandler(
+            Context context,
+            MapView mapView,
+            SceneView sceneView,
+            TextView legendButton) {
 
         this.mapView = mapView;
-        this.featureLayerDisplayStatus = new FeatureLayerDisplayStatus(
-                com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.SLOPE);
+        this.sceneView = sceneView;
+        this.geoViewDisplayStatus = new GeoViewDisplayStatus(mapView);
+                //com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.SLOPE);
 
-        this.avalancheLayerEchmishte = createFeatureLayer(
+      /*  this.avalancheLayerEchmishte = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope1/FeatureServer/0");
 
         this.avalancheLayerPirin = createFeatureLayer(
@@ -61,20 +83,23 @@ public class FeatureLayerHandler {
         this.slopeLayer4 = createFeatureLayer(
                 "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/slope4/FeatureServer/0");
         this.slopeLayer5 = createFeatureLayer(
-                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/dissolved5/FeatureServer/0");
+                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/dissolved5/FeatureServer/0");*/
 
-        this.todorkaATES = createFeatureLayer(
-                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/TodorkaATES/FeatureServer/0");
+        /*this.todorkaATES = createFeatureLayer(
+                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/TodorkaATES/FeatureServer/0");*/
 
-        this.legendController = new LegendController(context, mapView,this, legendButton);
+        this.todorkaATES = createFeatureLayer("" +
+                "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/ATES/FeatureServer/0");
+
+        this.legendControllerView = new LegendController(context,this, legendButton);
     }
 
-    public FeatureLayerDisplayStatus getFeatureLayerDisplayStatus() {
+    public GeoViewDisplayStatus getFeatureLayerDisplayStatus() {
 
-        return featureLayerDisplayStatus;
+        return geoViewDisplayStatus;
     }
 
-    public FeatureLayer getAvalancheLayerEchmishte() {
+   /* public FeatureLayer getAvalancheLayerEchmishte() {
 
         return avalancheLayerEchmishte;
     }
@@ -112,7 +137,7 @@ public class FeatureLayerHandler {
     public FeatureLayer getSlopeLayer5() {
 
         return slopeLayer5;
-    }
+    }*/
 
     public FeatureLayer getTodorkaATES() {
 
@@ -124,55 +149,113 @@ public class FeatureLayerHandler {
         this.opacity = opacity;
     }
 
-    public void displayChangeFeatureLayerIcon(ImageView changeFeatureLayerIcon) {
+    public void displayChangeFeatureLayerIcon(
+            ImageView changeFeatureLayerIcon, Compass compass, Scalebar scalebar) {
 
-        displaySlope();
+        //displaySlope();
 
-        legendController.displaySlopeLegendButton();
+        //legendController.displaySlopeLegendButton();
+
+        legendControllerView.displayTodorkaATESLegendButton(mapView);
+        displayFeatureLayer(todorkaATES, mapView);
 
         changeFeatureLayerIcon.setOnClickListener(view -> {
 
-            com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer currentFeatureLayer = featureLayerDisplayStatus.getCurrentFeatureLayer();
+            GeoView currentGeoView = geoViewDisplayStatus.getGeoView();
+            boolean isMapView = currentGeoView instanceof MapView;
 
-            switch(currentFeatureLayer.ordinal()) {
+            if (currentGeoView instanceof MapView) {
 
-                case 0:
+                removeFeatureLayer(todorkaATES, mapView);
+                legendControllerView.removeTodorkaATESLegend(mapView);
 
-                    removeSlope();
+                mapView.setVisibility(View.INVISIBLE);
+                sceneView.setVisibility(View.VISIBLE);
+
+                displayFeatureLayer(todorkaATES, sceneView);
+                legendControllerView.displayTodorkaATESLegendButton(sceneView);
+                geoViewDisplayStatus.setGeoView(sceneView);
+                compass.bindTo(sceneView);
+                scalebar.setVisibility(View.INVISIBLE);
+
+                Point currentCenterOfMap =  mapView.getVisibleArea().getExtent().getCenter();
+                Point currentCenterOfMapProjected =
+                        (Point) GeometryEngine.project(currentCenterOfMap, SpatialReferences.getWgs84());
+
+                Camera camera = new Camera(
+                        currentCenterOfMapProjected.getY(),
+                        currentCenterOfMapProjected.getX(),
+                        3000.0,
+                        0.0,
+                        90.0,
+                        0.0);
+
+                sceneView.setViewpointCamera(camera);
+
+               /*Camera camera = new Camera(
+                        mapView.getLocationDisplay().getMapLocation(),
+                        0.0,
+                        80.0,
+                        0.0);
+                sceneView.setViewpointCamera(camera);*/
+
+                //legendControllerView.displayTodorkaATESLegendButton(sceneView);
+
+            } else {
+
+                removeFeatureLayer(todorkaATES, sceneView);
+                legendControllerView.removeTodorkaATESLegend(sceneView);
+
+                mapView.setVisibility(View.VISIBLE);
+                sceneView.setVisibility(View.INVISIBLE);
+
+
+                displayFeatureLayer(todorkaATES, mapView);
+                legendControllerView.displayTodorkaATESLegendButton(mapView);
+                //legendController.removeSlopeLegend();
+                // legendController.displayAvalancheRiskLegendButton()
+
+                // featureLayerDisplayStatus.setCurrentFeatureLayer(
+                //        com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.AVALANCHE_RISK);
+                geoViewDisplayStatus.setGeoView(mapView);
+                compass.bindTo(mapView);
+                scalebar.setVisibility(View.VISIBLE);
+            }
+
+           /* switch(isMapView) {
+
+                case "":
+
+                    //removeSlope();
 
                     // displayFeatureLayer(avalancheLayerEchmishte);
                     // displayFeatureLayer(avalancheLayerPirin);
-                    displayFeatureLayer(todorkaATES);
 
-                    legendController.removeSlopeLegend();
-                    // legendController.displayAvalancheRiskLegendButton();
-                    legendController.displayTodorkaATESLegendButton();
-
-                    // featureLayerDisplayStatus.setCurrentFeatureLayer(
-                    //        com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.AVALANCHE_RISK);
-                    featureLayerDisplayStatus.setCurrentFeatureLayer(
-                            com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.TODORKA_ATES);
+                           // com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.TODORKA_ATES);
 
                     break;
-                case 1:
+
+                case "kkk":
 
                     //removeFeatureLayer(avalancheLayerEchmishte);
                     //removeFeatureLayer(avalancheLayerPirin);
-                    removeFeatureLayer(todorkaATES);
-                    displaySlope();
+                    //removeFeatureLayer(todorkaATES);
+                    //displaySlope();
 
                     //legendController.removeAvalancheRiskLegend();
-                    legendController.removeTodorkaATESLegend();
-                    legendController.displaySlopeLegendButton();
+                    //legendController.removeTodorkaATESLegend();
+                    //legendController.displaySlopeLegendButton();
 
-                    featureLayerDisplayStatus.setCurrentFeatureLayer(
-                            com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.SLOPE);
+                    //featureLayerDisplayStatus.setCurrentFeatureLayer(
+                    //        com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayer.SLOPE);
+
+
                     break;
-            }
+            }*/
         });
     }
 
-    private void displaySlope() {
+   /* private void displaySlope() {
 
         displayFeatureLayer(echmishteSlope);
         displayFeatureLayer(slopeLayer1);
@@ -190,27 +273,50 @@ public class FeatureLayerHandler {
         removeFeatureLayer(slopeLayer3);
         removeFeatureLayer(slopeLayer4);
         removeFeatureLayer(slopeLayer5);
+    }*/
+
+    public void displayBoundaryLayer(FeatureLayer boundaryLayer, GeoView viewToAddTo) {
+
+       addFeatureLayer(boundaryLayer, viewToAddTo);
     }
 
-    public void displayBoundaryLayer(FeatureLayer boundaryLayer) {
-
-        mapView.getMap().getOperationalLayers().add(boundaryLayer);
-    }
-
-    public void displayFeatureLayer(FeatureLayer featureLayer) {
+    public void displayFeatureLayer(FeatureLayer featureLayer, GeoView viewToAddTo) {
 
         featureLayer.setOpacity(opacity);
-        mapView.getMap().getOperationalLayers().add(featureLayer);
+        addFeatureLayer(featureLayer, viewToAddTo);
     }
 
-    private void removeFeatureLayer(FeatureLayer featureLayer) {
+    private void removeFeatureLayer(FeatureLayer featureLayer,  GeoView viewToAddTo) {
 
-        mapView.getMap().getOperationalLayers().remove(featureLayer);
+        if (viewToAddTo instanceof MapView) {
+
+            MapView mapView = (MapView) viewToAddTo;
+            mapView.getMap().getOperationalLayers().remove(featureLayer);
+
+        } else {
+
+            SceneView mapView = (SceneView) viewToAddTo;
+            mapView.getScene().getOperationalLayers().remove(featureLayer);
+        }
     }
 
     public FeatureLayer createFeatureLayer(String featureLayerURL) {
 
         ServiceFeatureTable featureTable = new ServiceFeatureTable(featureLayerURL);
         return new FeatureLayer(featureTable);
+    }
+
+    private void addFeatureLayer(FeatureLayer featureLayer, GeoView viewToAddTo) {
+
+        if (viewToAddTo instanceof MapView) {
+
+            MapView mapView = (MapView) viewToAddTo;
+            mapView.getMap().getOperationalLayers().add(featureLayer);
+
+        } else {
+
+            SceneView sceneView = (SceneView) viewToAddTo;
+            sceneView.getScene().getOperationalLayers().add(featureLayer);
+        }
     }
 }

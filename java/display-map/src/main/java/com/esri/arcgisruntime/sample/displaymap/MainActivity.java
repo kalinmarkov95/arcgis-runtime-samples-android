@@ -16,6 +16,7 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.TextView;
@@ -28,12 +29,18 @@ import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.mapping.ArcGISMap;
+import com.esri.arcgisruntime.mapping.ArcGISScene;
+import com.esri.arcgisruntime.mapping.ArcGISTiledElevationSource;
+import com.esri.arcgisruntime.mapping.Basemap;
 import com.esri.arcgisruntime.mapping.BasemapStyle;
 import com.esri.arcgisruntime.mapping.GeoElement;
 import com.esri.arcgisruntime.mapping.Viewpoint;
+import com.esri.arcgisruntime.mapping.view.Camera;
+import com.esri.arcgisruntime.mapping.view.GeoView;
 import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.esri.arcgisruntime.mapping.view.MapView;
+import com.esri.arcgisruntime.mapping.view.SceneView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.sample.displaymap.Widgets.Slider;
 import com.esri.arcgisruntime.sample.displaymap.location.avalanchewarningsystem.AvalancheWarningLevel;
@@ -48,6 +55,8 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     private MapView mapView;
+
+    private SceneView sceneView;
 
     private LocationDisplay locationDisplay;
 
@@ -72,15 +81,14 @@ public class MainActivity extends AppCompatActivity {
         ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
         ArcGISRuntimeEnvironment.setLicense("runtimelite,1000,rud7105386839,none,NKMFA0PL4S631R1DF239");
 
-
         displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 1000000);
         locationDisplay = mapView.getLocationDisplay();
 
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
-        featureLayerHandler = new FeatureLayerHandler(this, mapView, findViewById(R.id.showHideLegendButton));
+        featureLayerHandler = new FeatureLayerHandler(this, mapView, sceneView, findViewById(R.id.showHideLegendButton));
         featureLayerHandler.displayBoundaryLayer(
-                featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL));
+                featureLayerHandler.createFeatureLayer(pirinNationalParkBoundaryURL), mapView);
 
         Slider transparencySlider = new Slider(this, mapView, featureLayerHandler);
         transparencySlider.createSlider(screenWidth, screenHeight);
@@ -93,7 +101,10 @@ public class MainActivity extends AppCompatActivity {
 
         new LocationDisplayer().displayGPSServices(locationDisplay,this);
 
-        featureLayerHandler.displayChangeFeatureLayerIcon(findViewById(R.id.changeFeatureLayerIcon));
+        featureLayerHandler.displayChangeFeatureLayerIcon(
+                findViewById(R.id.changeFeatureLayerIcon),
+                compass,
+                scalebar);
     }
 
     @Override
@@ -140,8 +151,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (element instanceof Feature) {
 
                                         Feature feature = (Feature) element;
-                                        AvalancheWarningLevel newAvalancheDanger = AvalancheWarningLevel.getRespectiveWarningLevel(
-                                                (String) feature.getAttributes().get("ATES"));
+                                        int newAvalancheDanger = (int) feature.getAttributes().get("gridcode");
 
                                         setTextAccordingToDangerLevel(newAvalancheDanger);
                                         break;
@@ -159,19 +169,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            private void setTextAccordingToDangerLevel(AvalancheWarningLevel newAvalancheDanger) {
+            private void setTextAccordingToDangerLevel(int newAvalancheDanger) {
 
-                switch (newAvalancheDanger.ordinal()) {
+                switch (newAvalancheDanger) {
 
-                    case 0:
+                    case 1:
                         updateLabel("На безопасно място", Color.GREEN);
                         break;
 
-                    case 1:
+                    case 2:
                         updateLabel("Внимание", Color.MAGENTA);
                         break;
 
-                    case 2:
+                    case 3:
                         updateLabel("Голям риск!", Color.RED);
                         vibrateAndSoundAlarm();
                         break;
@@ -230,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                     v.vibrate(500);
                 }
             }
-        }, 0, 1000);
+        }, 0, 5000);
 
         return true;
     }
@@ -252,18 +262,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mapView.pause();
+        sceneView.pause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mapView.resume();
+        sceneView.resume();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mapView.dispose();
+        sceneView.dispose();
     }
 
     private void displayBaseMap(
@@ -273,9 +286,40 @@ public class MainActivity extends AppCompatActivity {
             int scale) {
 
         mapView = findViewById(R.id.mapView);
+        sceneView = findViewById(R.id.sceneView);
+        mapView.setVisibility(View.VISIBLE);
+
         ArcGISMap map = new ArcGISMap(basemapStyle);
         mapView.setMap(map);
         mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
+
+       ArcGISTiledElevationSource elevationSource
+               = new ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer");
+
+       ArcGISScene scene = new ArcGISScene(basemapStyle);
+       scene.getBaseSurface().getElevationSources().add(elevationSource);
+       sceneView.setScene(scene);
+       sceneView.setVisibility(View.INVISIBLE);
+
+       //Camera camera = new Camera(initialLat, initialLong, 3000.0, 10.0, 80.0, 0.0);
+       //sceneView.setViewpointCamera(camera);
+
+        // on viewpoint change synchronize viewpoints
+        mapView.addViewpointChangedListener(viewpointChangedEvent -> synchronizeViewpoints(mapView, sceneView));
+        sceneView.addViewpointChangedListener(viewpointChangedEvent -> synchronizeViewpoints(sceneView, mapView));
+    }
+
+    /**
+     * Synchronizes the viewpoint across GeoViews when the user is navigating.
+     */
+    private static void synchronizeViewpoints(GeoView navigatingGeoView, GeoView geoViewToSync) {
+
+        if (navigatingGeoView.isNavigating()) {
+
+            Viewpoint navigatingViewpoint =
+                    navigatingGeoView.getCurrentViewpoint(Viewpoint.Type.CENTER_AND_SCALE);
+            geoViewToSync.setViewpoint(navigatingViewpoint);
+        }
     }
 
     public void setGPSOff(MenuItem item) {

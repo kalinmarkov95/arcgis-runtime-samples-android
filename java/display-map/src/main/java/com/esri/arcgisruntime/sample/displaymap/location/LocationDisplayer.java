@@ -21,14 +21,15 @@ public class LocationDisplayer {
 
         locationDisplay.addDataSourceStatusChangedListener(dataSourceStatusChangedEvent -> {
 
-            if (dataSourceStatusChangedEvent.isStarted())
+            if (dataSourceStatusChangedEvent.isStarted()) {
 
                 return;
+            }
 
-            if (dataSourceStatusChangedEvent.getError() == null)
+            if (dataSourceStatusChangedEvent.getError() == null) {
 
                 return;
-
+            }
             boolean permissionCheck1 = ContextCompat.checkSelfPermission(mainActivity, reqPermissions[0]) ==
                     PackageManager.PERMISSION_GRANTED;
             boolean permissionCheck2 = ContextCompat.checkSelfPermission(mainActivity, reqPermissions[1]) ==
