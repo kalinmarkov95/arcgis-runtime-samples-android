@@ -44,7 +44,6 @@ public class AvalancheWarningWorker extends Worker {
         Log.i("LOGGER", Integer.toString(screenPoint.x));
         Log.i("LOGGER", Integer.toString(screenPoint.y));
 
-
         ListenableFuture<IdentifyLayerResult> identifyLayerResultFuture =
                 MainActivity.mapView.identifyLayerAsync(FeatureLayerHandler.todorkaATES, screenPoint, 0.01, false, -1);
 

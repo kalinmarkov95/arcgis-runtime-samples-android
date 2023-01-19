@@ -23,10 +23,11 @@
             android:enabled="true" >
         </service>
         <receiver
-            android:name=".location.RestartServiceBroadcastReceiver">
+            android:name=".location.LocationBroadcastReceiver">
+            android:process=":remote"
             android:enabled="true"
             android:exported="true"
-            android:label="RestartServiceWhenStopped"
+            android:label="Get location"
         </receiver>
         <receiver
             android:name=".location.LocationBroadcastReceiver2">
