@@ -1,6 +1,10 @@
 package com.esri.arcgisruntime.sample.displaymap;
 
+import android.Manifest;
+import android.app.ActivityManager;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -10,6 +14,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.DisplayMetrics;
@@ -22,8 +27,10 @@ import android.view.animation.Animation;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.esri.arcgisruntime.concurrent.ListenableFuture;
@@ -41,27 +48,60 @@ import com.esri.arcgisruntime.mapping.view.MapView;
 import com.esri.arcgisruntime.mapping.view.SceneView;
 import com.esri.arcgisruntime.sample.displaymap.FeatureLayer.FeatureLayerHandler;
 import com.esri.arcgisruntime.sample.displaymap.Widgets.Slider;
-import com.esri.arcgisruntime.sample.displaymap.location.LocationDisplayer;
+import com.esri.arcgisruntime.sample.displaymap.location.DataWrapper;
+import com.esri.arcgisruntime.sample.displaymap.location.LocationBroadcastReceiver;
+import com.esri.arcgisruntime.sample.displaymap.location.LocationService;
+import com.esri.arcgisruntime.sample.displaymap.location.LocationTimerTask;
 import com.esri.arcgisruntime.toolkit.compass.Compass;
 import com.esri.arcgisruntime.toolkit.scalebar.Scalebar;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+@RequiresApi(api = Build.VERSION_CODES.Q)
 public class MainActivity extends AppCompatActivity {
 
-    private MapView mapView;
+    //static MainActivity instance;
+
+   /* LocationRequest locationRequest;
+
+   FusedLocationProviderClient fusedLocationProviderClient;*/
+
+   /*public static MainActivity getInstance() {
+
+        return instance;
+   }*/
+
+    public static MapView mapView;
 
     private SceneView sceneView;
 
-    private LocationDisplay locationDisplay;
+    public static LocationDisplay locationDisplay;
 
     private FeatureLayerHandler featureLayerHandler;
 
     private int screenHeight;
 
     private int screenWidth;
+
+    Intent locationServiceIntent;
+
+    private LocationService locationService;
+
+    private final int REQUEST_LOCATION_PERMISSION = 1;
+
+    public static Context ctx;
+
+    public Context getCtx() {
+
+        return ctx;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         this.screenWidth = metrics.widthPixels;
 
         super.onCreate(savedInstanceState);
+        ctx = this;
         setContentView(R.layout.activity_main);
 
         ArcGISRuntimeEnvironment.setApiKey(BuildConfig.API_KEY);
@@ -80,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         displayBaseMap(BasemapStyle.ARCGIS_IMAGERY_STANDARD, 41.76122, 23.44046, 1000000);
         locationDisplay = mapView.getLocationDisplay();
+        locationDisplay.startAsync();
 
         String pirinNationalParkBoundaryURL = "https://services9.arcgis.com/ALBafD9UofIP26pj/arcgis/rest/services/pirinnationalparkboundary/FeatureServer/0";
 
@@ -96,13 +138,177 @@ public class MainActivity extends AppCompatActivity {
         Scalebar scalebar = findViewById(R.id.scalebar);
         scalebar.bindTo(mapView);
 
-        new LocationDisplayer().displayGPSServices(locationDisplay,this);
-
         featureLayerHandler.displayChangeFeatureLayerIcon(
                 findViewById(R.id.changeFeatureLayerIcon),
                 compass,
                 scalebar);
+
+        //new LocationDisplayer().displayGPSServices(locationDisplay, this);
+
+       /* boolean permissionCheck1 = ContextCompat.checkSelfPermission(this, reqPermissions[0]) ==
+                PackageManager.PERMISSION_GRANTED;
+        boolean permissionCheck2 = ContextCompat.checkSelfPermission(this, reqPermissions[1]) ==
+                PackageManager.PERMISSION_GRANTED;
+        boolean permissionCheck3 = ContextCompat.checkSelfPermission(this, reqPermissions[2]) ==
+                PackageManager.PERMISSION_GRANTED;
+
+        if (!(permissionCheck1 && permissionCheck2 && permissionCheck3)) {
+
+           requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 2);
+
+        } else {
+
+            Toast.makeText(this, "ERROR", Toast.LENGTH_LONG).show();
+            locationDisplay.stop();
+        }*/
+        requestLocationPermission();
+        requestBackgroundLocationPermission();
+
+        locationService = new LocationService(getCtx());
+        locationServiceIntent = new Intent(getCtx(), locationService.getClass());
+        //DataWrapper dataWrapper = new DataWrapper(locationDisplay, getApplicationContext());
+
+        //locationServiceIntent.putExtra("locationDisplay", dataWrapper);
+        if (!isMyServiceRunning(locationService.getClass())) {
+
+            startService(locationServiceIntent);
+        }
+
+        //instance = this;
+
+      /*  Intent intent = new Intent(this, LocationService.class);
+        startService(intent);*/
+
+        //updateLocation();
+
+       /* Dexter.withContext(this).
+                withPermission(Manifest.permission.ACCESS_FINE_LOCATION).withListener(
+                new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+
+                        updateLocation();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+
+                        Toast.makeText(MainActivity.this, "You must accept this location", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+
+                    }
+                }).check();*/
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if (EasyPermissions.hasPermissions(this, perms)) {
+
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+        } else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestBackgroundLocationPermission() {
+
+       /* if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.fromParts("package", getPackageName(), null));
+            startActivity(intent);
+        }
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (!pm.isIgnoringBatteryOptimizations(getPackageName())) {
+            Intent intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+            startActivity(intent);
+        }
+*/
+        String[] perms = {Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+
+            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+            System.out.println("PERMISSION ALREDY GRANYTED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        } else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+
+                System.out.println("Location service is running!");
+                return true;
+            }
+        }
+
+        System.out.println("Location service is not running!");
+        return false;
+    }
+
+   /* private void updateLocation() {
+
+        buildLocationRequest();
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, getPendingIntent());
+    }*/
+
+    /*private PendingIntent getPendingIntent() {
+
+        Intent intent = new Intent(this, MyLocationService.class);
+        intent.setAction(MyLocationService.ACTION_PROCESS_UPDATE);
+        startService(intent);
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }*/
+
+    /*public void updateTextView(String value) {
+
+        System.out.println("Location is: " + value);
+    }*/
+
+    /*private void buildLocationRequest() {
+
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setSmallestDisplacement(10f);
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -119,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
-        Timer t = new Timer();
+        /*Timer t = new Timer();
         t.schedule(new TimerTask() {
 
             @Override
@@ -129,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
 
                     Point screenPoint = mapView.locationToScreen(locationDisplay.getMapLocation());
                     ListenableFuture<IdentifyLayerResult> identifyLayerResultFuture = mapView
-                            .identifyLayerAsync(featureLayerHandler.getTodorkaATES(), screenPoint, 0.01, false, -1);
+                            .identifyLayerAsync(FeatureLayerHandler.todorkaATES, screenPoint, 0.01, false, -1);
 
                     identifyLayerResultFuture.addDoneListener(() -> {
 
@@ -190,33 +396,33 @@ public class MainActivity extends AppCompatActivity {
 
             private void updateLabel(String text, int color) {
 
-                if(!avalancheDangerLabel.getText().equals(text) || avalancheDangerLabel.getTextColors().getDefaultColor() == color) {
+                if (!avalancheDangerLabel.getText().equals(text) || avalancheDangerLabel.getTextColors().getDefaultColor() == color) {
 
                     runOnUiThread(
 
-                        () -> {
+                            () -> {
 
-                            menu.removeItem(0);
-                            avalancheDangerLabel.setTextColor(color);
-                            avalancheDangerLabel.setText(text);
+                                menu.removeItem(0);
+                                avalancheDangerLabel.setTextColor(color);
+                                avalancheDangerLabel.setText(text);
 
-                            if(text.equals("Внимание!") || text.equals("В опасност!") || text.equals("Огромен риск!")) {
+                                if (text.equals("Внимание!") || text.equals("В опасност!") || text.equals("Огромен риск!")) {
 
-                                Animation anim = new AlphaAnimation(0.0f, 1.0f);
-                                anim.setDuration(500);
-                                anim.setStartOffset(20);
-                                anim.setRepeatMode(Animation.REVERSE);
-                                anim.setRepeatCount(Animation.INFINITE);
-                                avalancheDangerLabel.startAnimation(anim);
-                                avalancheDangerLabel.setTextSize(16);
-                            } else {
+                                    Animation anim = new AlphaAnimation(0.0f, 1.0f);
+                                    anim.setDuration(500);
+                                    anim.setStartOffset(20);
+                                    anim.setRepeatMode(Animation.REVERSE);
+                                    anim.setRepeatCount(Animation.INFINITE);
+                                    avalancheDangerLabel.startAnimation(anim);
+                                    avalancheDangerLabel.setTextSize(16);
+                                } else {
 
-                                avalancheDangerLabel.clearAnimation();
-                                avalancheDangerLabel.setTextSize(14);
+                                    avalancheDangerLabel.clearAnimation();
+                                    avalancheDangerLabel.setTextSize(14);
+                                }
+                                menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).
+                                        setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                             }
-                            menu.add(0, 0, 1, "1").setActionView(avalancheDangerLabel).
-                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-                        }
                     );
                 }
             }
@@ -237,13 +443,18 @@ public class MainActivity extends AppCompatActivity {
                     v.vibrate(500);
                 }
             }
-        }, 0, 2000);
+        }, 0, 2000);*/
 
         return true;
     }
 
+    /*@RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        System.out.println(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION));
+        System.out.println(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION));
+        System.out.println(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION));
 
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
@@ -253,7 +464,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show();
             locationDisplay.stop();
         }
-    }
+    }*/
 
     @Override
     protected void onPause() {
@@ -271,9 +482,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+
+        System.out.println("The application was destoyed!!!");
+        stopService(locationServiceIntent);
         mapView.dispose();
         sceneView.dispose();
+        super.onDestroy();
     }
 
     private void displayBaseMap(
@@ -290,13 +504,13 @@ public class MainActivity extends AppCompatActivity {
         mapView.setMap(map);
         mapView.setViewpoint(new Viewpoint(initialLat, initialLong, scale));
 
-       ArcGISTiledElevationSource elevationSource
-               = new ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer");
+        ArcGISTiledElevationSource elevationSource
+                = new ArcGISTiledElevationSource("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer");
 
-       ArcGISScene scene = new ArcGISScene(basemapStyle);
-       scene.getBaseSurface().getElevationSources().add(elevationSource);
-       sceneView.setScene(scene);
-       sceneView.setVisibility(View.INVISIBLE);
+        ArcGISScene scene = new ArcGISScene(basemapStyle);
+        scene.getBaseSurface().getElevationSources().add(elevationSource);
+        sceneView.setScene(scene);
+        sceneView.setVisibility(View.INVISIBLE);
 
         // on viewpoint change synchronize viewpoints
         mapView.addViewpointChangedListener(viewpointChangedEvent -> synchronizeViewpoints(mapView, sceneView));

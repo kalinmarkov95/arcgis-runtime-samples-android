@@ -23,5 +23,9 @@ dependencies {
 
     // arcgis-android & appcompat lib dependencies from rootProject build.gradle
     implementation 'com.esri.arcgisruntime:arcgis-android-toolkit:100.11.0'
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    //implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation "androidx.work:work-runtime:2.3.4"
+    implementation 'com.karumi:dexter:6.2.3'
+    implementation 'pub.devrel:easypermissions:3.0.0'
 }

@@ -26,7 +26,7 @@ public class FeatureLayerHandler {
 
     private GeoViewDisplayStatus geoViewDisplayStatus;
 
-    private FeatureLayer todorkaATES;
+    public static FeatureLayer todorkaATES;
 
     private LegendController legendControllerView;
 
